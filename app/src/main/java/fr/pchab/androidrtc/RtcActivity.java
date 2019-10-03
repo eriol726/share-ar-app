@@ -188,7 +188,7 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
         connectButton = (Button)findViewById(R.id.connectButton);
         disconnectButton = (Button)findViewById(R.id.disconnectButton);
 
-        new JsonTask().execute("http://192.168.2.194:3000/streams.json");
+
 
         connectButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view) {
@@ -196,21 +196,21 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
                 Log.d(TAG, "callerID: " + callerId);
                 Log.d(TAG, "payload: " + payload);
                 connectButton.setText("searching");
-
-                if(payload.length() != 0) {
-                    try {
-                        answer(callerId, payload);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }else{
-                    try {
-
-                        offer(readyCallID, payload);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
+                new JsonTask().execute("http://192.168.2.194:3000/streams.json");
+//                if(payload.length() != 0) {
+//                    try {
+//                        answer(callerId, payload);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }else{
+//                    try {
+//
+//                        offer(readyCallID, payload);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
 
 
             }
@@ -442,11 +442,11 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
         Log.d(TAG,"readyCallID: " + readyCallID);
         if (callerId != null) {
             Log.d(TAG,"callerId is not null: " + callerId);
-//            try {
-//                answer(callerId, payload);
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                answer(callerId, payload);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         } else {
            /* try {
                 answer(callId);
@@ -454,17 +454,16 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
                 e.printStackTrace();
             }*/
 
-           // call(callId);
+           call(callId);
 
         }
-        startCam();
+       // startCam();
     }
 
     public void answer(String callerId, JSONObject payload) throws JSONException {
         String deviceName = getDeviceName();
-        //startCam();
-        client.sendMessage(callerId, "offer", payload, deviceName );
-
+        client.sendMessage(callerId, "init", null, deviceName );
+        startCam();
     }
 
     public void offer(String callerId, JSONObject payload) throws JSONException {
@@ -521,7 +520,7 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
     @Override
     public void onAddRemoteStream(MediaStream remoteStream, int endPoint) {
 
-        new JsonTask().execute("http://192.168.2.194:3000/streams.json");
+        //new JsonTask().execute("http://192.168.2.194:3000/streams.json");
         Log.d(TAG, "onAddRemoteStream type: " + type);
 
         runOnUiThread(new Runnable() {
@@ -818,8 +817,9 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
                         if(response.getJSONObject(i).getString("id") != readyCallID){
                             callerId = response.getJSONObject(i).getString("id");
                             type = response.getJSONObject(i).getString("type");
-                            payload = response.getJSONObject(i).getJSONObject("payload");
-
+                            //payload = response.getJSONObject(i).getJSONObject("payload");
+                            payload = null;
+                            answer(callerId,payload);
                             break;
                         }
 
