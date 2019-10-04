@@ -213,11 +213,7 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
                     //callerId = readyCallID;
                     startCam();
                 }
-                else if(hasAcandidate){
-                    BluetoothAdapter myDevice = BluetoothAdapter.getDefaultAdapter();
-                    String deviceName = getDeviceName();
-                    client.start(deviceName);
-                }
+
 
 
 //                if(payload.length() != 0) {
@@ -485,11 +481,11 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
         Log.d(TAG,"readyCallID: " + readyCallID);
         if (callerId != null) {
             Log.d(TAG,"callerId is not null: " + callerId);
-            try {
-                answer(callerId, payload);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                answer(callerId, payload);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
         } else {
            /* try {
                 answer(callId);
@@ -554,12 +550,17 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
     @Override
     public void onLocalStream(MediaStream localStream) {
         Log.d(TAG, "onLocalStream: ");
-        localStream.videoTracks.get(0).addRenderer(new VideoRenderer(localRender));
 
-        VideoRendererGui.update(localRender,
-                LOCAL_X_CONNECTING, LOCAL_Y_CONNECTING,
-                LOCAL_WIDTH_CONNECTING, LOCAL_HEIGHT_CONNECTING,
-                scalingType, false);
+        BluetoothAdapter myDevice = BluetoothAdapter.getDefaultAdapter();
+        String deviceName = getDeviceName();
+        if(deviceName.equals("Samsung SM-G950F")) {
+            localStream.videoTracks.get(0).addRenderer(new VideoRenderer(localRender));
+
+            VideoRendererGui.update(localRender,
+                    LOCAL_X_CONNECTING, LOCAL_Y_CONNECTING,
+                    LOCAL_WIDTH_CONNECTING, LOCAL_HEIGHT_CONNECTING,
+                    scalingType, false);
+        }
     }
 
     @Override
