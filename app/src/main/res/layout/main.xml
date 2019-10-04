@@ -10,10 +10,10 @@
         android:layout_height="fill_parent"
         android:layout_gravity="top"/>
 
-    <android.view.SurfaceView
-        android:id="@+id/preview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+<!--    <android.view.SurfaceView-->
+<!--        android:id="@+id/preview"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent" />-->
 
 <!--    <android.opengl.GLSurfaceView-->
 <!--        android:id="@+id/glview_call"-->
@@ -30,6 +30,11 @@
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="match_parent" />-->
 
+    <LinearLayout
+        android:id="@+id/linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
     <Button
         android:id="@+id/connectButton"
         android:layout_width="wrap_content"
@@ -38,13 +43,17 @@
         android:text="Connect" />
 
     <Button
+        android:id="@+id/showType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="showType"
+        android:text="showType" />
+
+    <Button
         android:id="@+id/disconnectButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/surfaceview"
-        android:layout_alignRight="@+id/surfaceview"
-        android:layout_marginEnd="3dp"
-        android:layout_marginRight="3dp"
         android:text="Disconnect" />
+    </LinearLayout>
 
 </RelativeLayout>

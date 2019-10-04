@@ -99,8 +99,8 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
     private static final int LOCAL_WIDTH_CONNECTING = 100;
     private static final int LOCAL_HEIGHT_CONNECTING = 100;
     // Local preview screen position after call is connected.
-    private static final int LOCAL_X_CONNECTED = 72;
-    private static final int LOCAL_Y_CONNECTED = 72;
+    private static final int LOCAL_X_CONNECTED = 0;
+    private static final int LOCAL_Y_CONNECTED = 0;
     private static final int LOCAL_WIDTH_CONNECTED = 25;
     private static final int LOCAL_HEIGHT_CONNECTED = 25;
     // Remote video screen position
@@ -147,6 +147,7 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
     private static final String SEARCHING_PLANE_MESSAGE = "Searching for surfaces...";
 
     private boolean done = false;
+    private boolean hasAcandidate = false;
 
     // Anchors created from taps used for object placing with a given color.
     private static class ColoredAnchor {
@@ -163,6 +164,7 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
 
     Button connectButton;
     Button disconnectButton;
+    Button showTypeButton;
 
     private static final String[] RequiredPermissions = new String[]{Manifest.permission.CAMERA};
     protected PermissionChecker permissionChecker = new PermissionChecker();
@@ -187,6 +189,7 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
 
         connectButton = (Button)findViewById(R.id.connectButton);
         disconnectButton = (Button)findViewById(R.id.disconnectButton);
+        showTypeButton = (Button)findViewById(R.id.showType);
 
 
 
@@ -196,7 +199,27 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
                 Log.d(TAG, "callerID: " + callerId);
                 Log.d(TAG, "payload: " + payload);
                 connectButton.setText("searching");
+
                 new JsonTask().execute("http://192.168.2.194:3000/streams.json");
+
+                if(callerId != null){
+                    try {
+                        answer(callerId, payload);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else if(!hasAcandidate){
+                    //callerId = readyCallID;
+                    startCam();
+                }
+                else if(hasAcandidate){
+                    BluetoothAdapter myDevice = BluetoothAdapter.getDefaultAdapter();
+                    String deviceName = getDeviceName();
+                    client.start(deviceName);
+                }
+
+
 //                if(payload.length() != 0) {
 //                    try {
 //                        answer(callerId, payload);
@@ -213,6 +236,24 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
 //                }
 
 
+            }
+        });
+
+        showTypeButton.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                String s = client.getPeerType(callerId);
+
+                if(s == "ANSWER"){
+                    VideoRendererGui.update(remoteRender,
+                            LOCAL_X_CONNECTED, LOCAL_Y_CONNECTED,
+                            LOCAL_WIDTH_CONNECTED, LOCAL_HEIGHT_CONNECTED,
+                            scalingType, false);
+                }
+                else{
+
+                }
+                Log.d(TAG, "readyCallID: " + readyCallID);
+                Log.d(TAG, "callerID: " + callerId);
             }
         });
 
@@ -335,6 +376,8 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
                 true, false, displaySize.x, displaySize.y, 30, 1, VIDEO_CODEC_VP9, true, 1, AUDIO_CODEC_OPUS, true);
 
         client = new WebRtcClient(this, mSocketAddress, params, surfaceView);
+
+
     }
 
     @Override
@@ -453,8 +496,8 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
             } catch (JSONException e) {
                 e.printStackTrace();
             }*/
-
-           call(callId);
+           // startCam();
+          // call(callId);
 
         }
        // startCam();
@@ -463,7 +506,7 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
     public void answer(String callerId, JSONObject payload) throws JSONException {
         String deviceName = getDeviceName();
         client.sendMessage(callerId, "init", null, deviceName );
-        startCam();
+        //startCam();
     }
 
     public void offer(String callerId, JSONObject payload) throws JSONException {
@@ -474,10 +517,11 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
     }
 
     public void call(String callId) {
-        Intent msg = new Intent(Intent.ACTION_SEND);
-        msg.putExtra(Intent.EXTRA_TEXT, mSocketAddress + callId);
-        msg.setType("text/plain");
-        startActivityForResult(Intent.createChooser(msg, "Call someone :"), VIDEO_CALL_SENT);
+
+//        Intent msg = new Intent(Intent.ACTION_SEND);
+//        msg.putExtra(Intent.EXTRA_TEXT, mSocketAddress + callId + "5555");
+//        msg.setType("text/plain");
+//        startActivityForResult(Intent.createChooser(msg, "Call someone :"), VIDEO_CALL_SENT);
     }
 
     @Override
@@ -509,6 +553,7 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
 
     @Override
     public void onLocalStream(MediaStream localStream) {
+        Log.d(TAG, "onLocalStream: ");
         localStream.videoTracks.get(0).addRenderer(new VideoRenderer(localRender));
 
         VideoRendererGui.update(localRender,
@@ -522,6 +567,9 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
 
         //new JsonTask().execute("http://192.168.2.194:3000/streams.json");
         Log.d(TAG, "onAddRemoteStream type: " + type);
+        Log.d(TAG, "endPoint: " + endPoint);
+
+
 
         runOnUiThread(new Runnable() {
 
@@ -532,17 +580,30 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
 
             }
         });
-        remoteStream.videoTracks.get(0).addRenderer(new VideoRenderer(remoteRender));
 
 
-        VideoRendererGui.update(remoteRender,
-                REMOTE_X, REMOTE_Y,
-                REMOTE_WIDTH, REMOTE_HEIGHT, scalingType, false);
 
-        VideoRendererGui.update(localRender,
-                LOCAL_X_CONNECTED, LOCAL_Y_CONNECTED,
-                LOCAL_WIDTH_CONNECTED, LOCAL_HEIGHT_CONNECTED,
-                scalingType, false);
+        BluetoothAdapter myDevice = BluetoothAdapter.getDefaultAdapter();
+        String deviceName = getDeviceName();
+        if(deviceName.equals("Samsung SM-T830")){
+            remoteStream.videoTracks.get(0).addRenderer(new VideoRenderer(remoteRender));
+
+            VideoRendererGui.update(localRender,
+                    LOCAL_X_CONNECTED, LOCAL_Y_CONNECTED,
+                    25, 25, scalingType, false);
+
+            VideoRendererGui.update(remoteRender,
+                    REMOTE_X, REMOTE_Y,
+                    REMOTE_WIDTH, REMOTE_HEIGHT, scalingType, false);
+        }else{
+            Log.d(TAG, "deviceName: " + deviceName);
+        }
+
+//
+
+
+
+
 
 
 
@@ -808,18 +869,18 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
         @Override
         protected void onPostExecute(JSONArray response)
         {
-            if(response != null)
+            if(response.length() > 0)
             {
                 try {
                     Log.e("App", "Success: " + response.getJSONObject(0).getString("id") );
-
+                    hasAcandidate = true;
                     for(int i = 0; i < response.length(); i++){
                         if(response.getJSONObject(i).getString("id") != readyCallID){
                             callerId = response.getJSONObject(i).getString("id");
                             type = response.getJSONObject(i).getString("type");
                             //payload = response.getJSONObject(i).getJSONObject("payload");
                             payload = null;
-                            answer(callerId,payload);
+
                             break;
                         }
 

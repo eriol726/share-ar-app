@@ -292,10 +292,22 @@ public class WebRtcClient {
 
     private void removePeer(String id) {
         Peer peer = peers.get(id);
+
         mListener.onRemoveRemoteStream(peer.endPoint);
         peer.pc.close();
         peers.remove(peer.id);
         endPoints[peer.endPoint] = false;
+    }
+
+    public String getPeerType(String id){
+        Peer peer = peers.get(id);
+        if(peer != null){
+            String type = peer.pc.getLocalDescription().type.toString();
+            return type;
+        }
+
+        return "not paired";
+
     }
 
     public WebRtcClient(RtcListener listener, String host, PeerConnectionParameters params, GLSurfaceView mEGLcontext) {
