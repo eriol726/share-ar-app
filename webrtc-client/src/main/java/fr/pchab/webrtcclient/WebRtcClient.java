@@ -400,6 +400,7 @@ public class WebRtcClient {
 
     private void setCamera() {
         localMS = factory.createLocalMediaStream("ARDAMS");
+
         if (pcParams.videoCallEnabled) {
             MediaConstraints videoConstraints = new MediaConstraints();
             videoConstraints.mandatory.add(new MediaConstraints.KeyValuePair("maxHeight", Integer.toString(pcParams.videoHeight)));
@@ -420,6 +421,7 @@ public class WebRtcClient {
     private VideoCapturer getVideoCapturer() {
         Log.d(TAG, "type: " + type);
         String backCameraDeviceName = VideoCapturerAndroid.getNameOfBackFacingDevice();
+        // här måste jag returnera video strömmen istllet för att returnera cameran
         return VideoCapturerAndroid.create(backCameraDeviceName);
     }
 }
