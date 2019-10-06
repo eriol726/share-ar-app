@@ -8,8 +8,10 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
+import android.media.projection.MediaProjection;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.EGLContext;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,6 +36,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.MediaStream;
+import org.webrtc.VideoCapturer;
 import org.webrtc.VideoRenderer;
 import org.webrtc.VideoRendererGui;
 
@@ -82,10 +85,14 @@ import common.helpers.FullScreenHelper;
 import common.helpers.SnackbarHelper;
 import common.helpers.TapHelper;
 import common.helpers.TrackingStateHelper;
-
+import org.webrtc.VideoSource;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
+//import org.webrtc.ScreenCapturerAndroid;
+//import org.webrtc.VideoCapturer;
+import org.webrtc.ScreenCapturerAndroid;
 
 public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcListener, GLSurfaceView.Renderer{
 
@@ -290,6 +297,8 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
     Button showTypeButton;
     RtcActivity RtcActivityInstance;
     private String deviceName;
+    private static int mMediaProjectionPermissionResultCode;
+    private static Intent mMediaProjectionPermissionResultData;
 
 
     private static final String[] RequiredPermissions = new String[]{Manifest.permission.CAMERA};
@@ -326,7 +335,7 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
                 Log.d(TAG, "payload: " + payload);
                 connectButton.setText("searching");
 
-                new JsonTask().execute("http://192.168.2.194:3000/streams.json");
+                new JsonTask().execute("http://192.168.10.176:3000/streams.json");
 
                 if(callerId != null){
                     try {
@@ -376,130 +385,7 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
                 surfaceView.setPreserveEGLContextOnPause(true);
                 surfaceView.setEGLContextClientVersion(2);
                 surfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0); // Alpha used for plane blending.
-                surfaceView.setRenderer(new GLSurfaceView.Renderer() {
-                    @Override
-                    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-                        GLES20.glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-
-                        // Prepare the rendering objects. This involves reading shaders, so may throw an IOException.
-                        try {
-                            // Create the texture and pass it to ARCore session to be filled during update().
-                            backgroundRenderer.createOnGlThread(/*context=*/ RtcActivityInstance);
-                            planeRenderer.createOnGlThread(/*context=*/ RtcActivityInstance, "models/trigrid.png");
-                            pointCloudRenderer.createOnGlThread(/*context=*/ RtcActivityInstance);
-
-                            virtualObject.createOnGlThread(/*context=*/ RtcActivityInstance, "models/andy.obj", "models/andy.png");
-                            virtualObject.setMaterialProperties(0.0f, 2.0f, 0.5f, 6.0f);
-
-                            virtualObjectShadow.createOnGlThread(
-                                    /*context=*/ RtcActivityInstance, "models/andy_shadow.obj", "models/andy_shadow.png");
-                            virtualObjectShadow.setBlendMode(ObjectRenderer.BlendMode.Shadow);
-                            virtualObjectShadow.setMaterialProperties(1.0f, 0.0f, 0.0f, 1.0f);
-
-                        } catch (IOException e) {
-                            Log.e(TAG, "Failed to read an asset file", e);
-                        }
-                    }
-
-                    @Override
-                    public void onSurfaceChanged(GL10 gl, int width, int height) {
-                        displayRotationHelper.onSurfaceChanged(width, height);
-                        GLES20.glViewport(0, 0, width, height);
-                    }
-
-                    @Override
-                    public void onDrawFrame(GL10 gl) {
-                        // Clear screen to notify driver it should not load any pixels from previous frame.
-                        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-
-                        if (session == null) {
-                            return;
-                        }
-                        // Notify ARCore session that the view size changed so that the perspective matrix and
-                        // the video background can be properly adjusted.
-                        displayRotationHelper.updateSessionIfNeeded(session);
-
-                        try {
-                            session.setCameraTextureName(backgroundRenderer.getTextureId());
-
-                            // Obtain the current frame from ARSession. When the configuration is set to
-                            // UpdateMode.BLOCKING (it is by default), this will throttle the rendering to the
-                            // camera framerate.
-                            Frame frame = session.update();
-                            Camera camera = frame.getCamera();
-
-                            // Handle one tap per frame.
-                            handleTap(frame, camera);
-
-                            // If frame is ready, render camera preview image to the GL surface.
-                            backgroundRenderer.draw(frame);
-
-                            // Keep the screen unlocked while tracking, but allow it to lock when tracking stops.
-                            trackingStateHelper.updateKeepScreenOnFlag(camera.getTrackingState());
-
-                            // If not tracking, don't draw 3D objects, show tracking failure reason instead.
-                            if (camera.getTrackingState() == TrackingState.PAUSED) {
-                                messageSnackbarHelper.showMessage(
-                                        RtcActivityInstance, TrackingStateHelper.getTrackingFailureReasonString(camera));
-                                return;
-                            }
-
-                            // Get projection matrix.
-                            float[] projmtx = new float[16];
-                            camera.getProjectionMatrix(projmtx, 0, 0.1f, 100.0f);
-
-                            // Get camera matrix and draw.
-                            float[] viewmtx = new float[16];
-                            camera.getViewMatrix(viewmtx, 0);
-
-                            // Compute lighting from average intensity of the image.
-                            // The first three components are color scaling factors.
-                            // The last one is the average pixel intensity in gamma space.
-                            final float[] colorCorrectionRgba = new float[4];
-                            frame.getLightEstimate().getColorCorrection(colorCorrectionRgba, 0);
-
-                            // Visualize tracked points.
-                            // Use try-with-resources to automatically release the point cloud.
-                            try (PointCloud pointCloud = frame.acquirePointCloud()) {
-                                pointCloudRenderer.update(pointCloud);
-                                pointCloudRenderer.draw(viewmtx, projmtx);
-                            }
-
-                            // No tracking error at this point. If we detected any plane, then hide the
-                            // message UI, otherwise show searchingPlane message.
-                            if (hasTrackingPlane()) {
-                                messageSnackbarHelper.hide(RtcActivityInstance);
-                            } else {
-                                messageSnackbarHelper.showMessage(RtcActivityInstance, SEARCHING_PLANE_MESSAGE);
-                            }
-
-                            // Visualize planes.
-                            planeRenderer.drawPlanes(
-                                    session.getAllTrackables(Plane.class), camera.getDisplayOrientedPose(), projmtx);
-
-                            // Visualize anchors created by touch.
-                            float scaleFactor = 1.0f;
-                            for (ColoredAnchor coloredAnchor : anchors) {
-                                if (coloredAnchor.anchor.getTrackingState() != TrackingState.TRACKING) {
-                                    continue;
-                                }
-                                // Get the current pose of an Anchor in world space. The Anchor pose is updated
-                                // during calls to session.update() as ARCore refines its estimate of the world.
-                                coloredAnchor.anchor.getPose().toMatrix(anchorMatrix, 0);
-
-                                // Update and draw the model and its shadow.
-                                virtualObject.updateModelMatrix(anchorMatrix, scaleFactor);
-                                virtualObjectShadow.updateModelMatrix(anchorMatrix, scaleFactor);
-                                virtualObject.draw(viewmtx, projmtx, colorCorrectionRgba, coloredAnchor.color);
-                                virtualObjectShadow.draw(viewmtx, projmtx, colorCorrectionRgba, coloredAnchor.color);
-                            }
-
-                        } catch (Throwable t) {
-                            // Avoid crashing the application due to unhandled exceptions.
-                            Log.e(TAG, "Exception on the OpenGL thread", t);
-                        }
-                    }
-                });
+                //surfaceView.setRenderer();
                 surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
                 surfaceView.setWillNotDraw(false);
@@ -525,8 +411,8 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
         BluetoothAdapter myDevice = BluetoothAdapter.getDefaultAdapter();
         deviceName = getDeviceName();
 
-        if(deviceName.equals("Samsung SM-G950F")) {
-
+        if(deviceName.toLowerCase().equals("samsung sm-g950f")) {
+            Log.d(TAG,"Samsung SM-G950F +++++++++++++++++++");
             displayRotationHelper = new DisplayRotationHelper(/*context=*/ this);
 
             // Set up tap listener.
@@ -535,32 +421,37 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
             surfaceView.setOnTouchListener(tapHelper);
 
             surfaceView.setPreserveEGLContextOnPause(true);
-             surfaceView.setEGLContextClientVersion(2);
-             surfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0); // Alpha used for plane blending.
-           // surfaceView.setRenderer(this);
+            surfaceView.setEGLContextClientVersion(2);
+            surfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0); // Alpha used for plane blending.
+            surfaceView.setRenderer(this);
 
+            init();
+//            VideoRendererGui.setView(surfaceView, new Runnable() {
+//                @Override
+//                public void run() {
+//
+//                    EGLContext eglContext = VideoRendererGui.getEGLContext();
+//
+//                    init();
+//                    //surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+//                    //surfaceView.setWillNotDraw(false);
+//                }
+//
+//            });
 
-            VideoRendererGui.setView(surfaceView, new Runnable() {
-                @Override
-                public void run() {
+            surfaceView.setWillNotDraw(false);
+            surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
-                    //int i = VideoRendererGui.getEGLContext();
-
-                    init();
-                    surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-                    //surfaceView.setWillNotDraw(false);
-                }
-
-            });
-
-           // surfaceView.setWillNotDraw(false);
-           // surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-
-
+//            remoteRender =  VideoRendererGui.create(
+//                    REMOTE_X, REMOTE_Y,
+//                    REMOTE_WIDTH, REMOTE_HEIGHT, scalingType, false);
+//            localRender = VideoRendererGui.create(
+//                    LOCAL_X_CONNECTING, LOCAL_Y_CONNECTING,
+//                    LOCAL_WIDTH_CONNECTING, LOCAL_HEIGHT_CONNECTING, scalingType, true);
 
 
         }else{
-
+            Log.d(TAG,"Samsung T830 +++++++++++++++++++");
             surfaceView.setPreserveEGLContextOnPause(true);
             surfaceView.setKeepScreenOn(true);
             VideoRendererGui.setView(surfaceView, new Runnable() {
@@ -663,7 +554,7 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
                 true, false, displaySize.x, displaySize.y, 30, 1, VIDEO_CODEC_VP9, true, 1, AUDIO_CODEC_OPUS, true);
 
 
-        client = new WebRtcClient(this, mSocketAddress, params, surfaceView);
+        client = new WebRtcClient(this, mSocketAddress, params, surfaceView, null);
 
 
     }
@@ -671,7 +562,7 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
     @Override
     public void onPause() {
         super.onPause();
-        if(deviceName == "Samsung SM-T830"){
+        if(deviceName.toLowerCase() == "samsung sm-t830"){
 
             surfaceView.onPause();
             if (client != null) {
@@ -697,7 +588,8 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
     @Override
     public void onResume() {
         super.onResume();
-        if(deviceName == "Samsung SM-T830"){
+        Log.d(TAG, "deviceName.toLowerCase(): " +  deviceName.toLowerCase() );
+        if(deviceName.toLowerCase().equals("samsung sm-t830")){
 
             surfaceView.onResume();
             if (client != null) {
@@ -861,7 +753,9 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
 
         //BluetoothAdapter myDevice = BluetoothAdapter.getDefaultAdapter();
         //String deviceName = getDeviceName();
-        if(deviceName.equals("Samsung SM-G950F")) {
+
+        // ta bort detta statet om du vill starta kameran på paddan
+        if(deviceName.toLowerCase().equals("samsung sm-g950f")) {
 
 
 
@@ -899,7 +793,7 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
 
         //BluetoothAdapter myDevice = BluetoothAdapter.getDefaultAdapter();
         //String deviceName = getDeviceName();
-        if(deviceName.equals("Samsung SM-T830")){
+        if(deviceName.toLowerCase().equals("samsung sm-t830")){
             remoteStream.videoTracks.get(0).addRenderer(new VideoRenderer(remoteRender));
 
             VideoRendererGui.update(localRender,
@@ -959,6 +853,20 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         FullScreenHelper.setFullScreenOnWindowFocusChanged(this, hasFocus);
+    }
+
+    private VideoCapturer createScreenCapturer() {
+        if (mMediaProjectionPermissionResultCode != Activity.RESULT_OK) {
+            Log.d(TAG,"User didn't give permission to capture the screen.");
+            return null;
+        }
+        return new ScreenCapturerAndroid(
+                mMediaProjectionPermissionResultData, new MediaProjection.Callback() {
+            @Override
+            public void onStop() {
+                Log.d(TAG,"User revoked permission to capture the screen.");
+            }
+        });
     }
 
 

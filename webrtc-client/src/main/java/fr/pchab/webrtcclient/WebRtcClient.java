@@ -42,7 +42,7 @@ public class WebRtcClient {
     private Socket client;
     private String type;
     private String deviceName;
-
+    VideoCapturer videoCapturer;
     /**
      * Implement this interface to be notified of events.
      */
@@ -310,9 +310,10 @@ public class WebRtcClient {
 
     }
 
-    public WebRtcClient(RtcListener listener, String host, PeerConnectionParameters params, GLSurfaceView mEGLcontext) {
+    public WebRtcClient(RtcListener listener, String host, PeerConnectionParameters params, GLSurfaceView mEGLcontext,  VideoCapturer capturer) {
         mListener = listener;
         pcParams = params;
+        videoCapturer = capturer;
         PeerConnectionFactory.initializeAndroidGlobals(listener, true, true,
                 params.videoCodecHwAcceleration, mEGLcontext);
         factory = new PeerConnectionFactory();
@@ -408,7 +409,11 @@ public class WebRtcClient {
             videoConstraints.mandatory.add(new MediaConstraints.KeyValuePair("maxFrameRate", Integer.toString(pcParams.videoFps)));
             videoConstraints.mandatory.add(new MediaConstraints.KeyValuePair("minFrameRate", Integer.toString(pcParams.videoFps)));
 
-            videoSource = factory.createVideoSource(getVideoCapturer(), videoConstraints);
+            //videoSource = factory.createVideoSource(getVideoCapturer(), videoConstraints);
+
+            videoSource = factory.createVideoSource(videoCapturer, videoConstraints);
+
+            //videoCapturer.startCapture(pcParams.videoWidth, pcParams.videoHeight, pcParams.videoFps);
             localMS.addTrack(factory.createVideoTrack("ARDAMSv0", videoSource));
         }
 
@@ -420,7 +425,9 @@ public class WebRtcClient {
 
     private VideoCapturer getVideoCapturer() {
         Log.d(TAG, "type: " + type);
-        String backCameraDeviceName = VideoCapturerAndroid.getNameOfBackFacingDevice();
+
+        //String backCameraDeviceName = VideoCapturerAndroid.getNameOfBackFacingDevice();
+        String backCameraDeviceName = VideoCapturerAndroid.getDeviceName(0);
         // här måste jag returnera video strömmen istllet för att returnera cameran
         return VideoCapturerAndroid.create(backCameraDeviceName);
     }
