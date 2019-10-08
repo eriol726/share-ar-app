@@ -142,6 +142,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private boolean done = false;
     private boolean hasAcandidate = false;
 
+    private GLSurfaceView surfaceView;
+
     private final ArrayList<ColoredAnchor> anchors = new ArrayList<>();
 
     String deviceName = "";
@@ -182,6 +184,149 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        }catch(InterruptedException e){
 //            e.printStackTrace();
 //        }
+
+        surfaceView = (GLSurfaceView) findViewById(R.id.surfaceview);
+        //surfaceView.setPreserveEGLContextOnPause(true);
+        //final List<String> segments = intent.getData().getPathSegments();
+
+        if(deviceName.toLowerCase().equals("samsung sm-g950f")) {
+            Log.d(TAG,"Samsung SM-G950F +++++++++++++++++++");
+            displayRotationHelper = new DisplayRotationHelper(/*context=*/ this);
+
+            // Set up tap listener.
+            tapHelper = new TapHelper(/*context=*/ this);
+
+            surfaceView.setOnTouchListener(tapHelper);
+
+            surfaceView.setPreserveEGLContextOnPause(true);
+            surfaceView.setEGLContextClientVersion(2);
+            surfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0); // Alpha used for plane blending.
+            surfaceView.setRenderer(this);
+
+            surfaceView.setWillNotDraw(false);
+            surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+
+
+
+
+        }else {
+            Log.d(TAG, "Samsung T830 +++++++++++++++++++");
+//            surfaceView.setPreserveEGLContextOnPause(true);
+//            surfaceView.setKeepScreenOn(true);
+//            VideoRendererGui.setView(surfaceView, new Runnable() {
+//                @Override
+//                public void run() {
+//                    init();
+//                }
+//            });
+        }
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(deviceName.toLowerCase() == "samsung sm-t830"){
+
+            surfaceView.onPause();
+//            if (client != null) {
+//                client.onPause();
+//            }
+        }
+
+
+        if (session != null) {
+            // Note that the order matters - GLSurfaceView is paused first so that it does not try
+            // to query the session. If Session is paused before GLSurfaceView, GLSurfaceView may
+            // still call session.update() and get a SessionPausedException.
+            displayRotationHelper.onPause();
+
+
+            surfaceView.onPause();
+            session.pause();
+
+
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "deviceName.toLowerCase(): " +  deviceName.toLowerCase() );
+        if(deviceName.toLowerCase().equals("samsung sm-t830")){
+
+            surfaceView.onResume();
+//            if (client != null) {
+//                client.onResume();
+//            }
+        }
+        else{
+            if (session == null) {
+                Exception exception = null;
+                String message = null;
+                try {
+                    switch (ArCoreApk.getInstance().requestInstall(this, !installRequested)) {
+                        case INSTALL_REQUESTED:
+                            installRequested = true;
+                            return;
+                        case INSTALLED:
+                            break;
+                    }
+
+                    // ARCore requires camera permissions to operate. If we did not yet obtain runtime
+                    // permission on Android M and above, now is a good time to ask the user for it.
+                    if (!CameraPermissionHelper.hasCameraPermission(this)) {
+                        CameraPermissionHelper.requestCameraPermission(this);
+                        return;
+                    }
+
+                    // Create the session.
+                    session = new Session(/* context= */ this);
+
+                } catch (UnavailableArcoreNotInstalledException
+                        | UnavailableUserDeclinedInstallationException e) {
+                    message = "Please install ARCore";
+                    exception = e;
+                } catch (UnavailableApkTooOldException e) {
+                    message = "Please update ARCore";
+                    exception = e;
+                } catch (UnavailableSdkTooOldException e) {
+                    message = "Please update this app";
+                    exception = e;
+                } catch (UnavailableDeviceNotCompatibleException e) {
+                    message = "This device does not support AR";
+                    exception = e;
+                } catch (Exception e) {
+                    message = "Failed to create AR session";
+                    exception = e;
+                }
+
+                if (message != null) {
+                    messageSnackbarHelper.showError(this, message);
+                    Log.e(TAG, "Exception creating session", exception);
+                    return;
+                }
+            }
+
+            // Note that order matters - see the note in onPause(), the reverse applies here.
+            try {
+                Log.d(TAG,"test");
+
+                session.resume();
+
+            } catch (CameraNotAvailableException e) {
+                // In some cases (such as another camera app launching) the camera may be given to
+                // a different app instead. Handle this properly by showing a message and recreate the
+                // session at the next iteration.
+                messageSnackbarHelper.showError(this, "Camera not available. Please restart the app.");
+                session = null;
+                return;
+            }
+
+
+            surfaceView.onResume();
+            displayRotationHelper.onResume();
+        }
 
     }
 
