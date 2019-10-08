@@ -415,6 +415,8 @@ public class WebRtcClient {
 
             //videoCapturer.startCapture(pcParams.videoWidth, pcParams.videoHeight, pcParams.videoFps);
             localMS.addTrack(factory.createVideoTrack("ARDAMSv0", videoSource));
+
+
         }
 
         //AudioSource audioSource = factory.createAudioSource(new MediaConstraints());

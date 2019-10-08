@@ -36,7 +36,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.MediaStream;
+import org.webrtc.SurfaceViewRenderer;
 import org.webrtc.VideoCapturer;
+import org.webrtc.VideoFrame;
 import org.webrtc.VideoRenderer;
 import org.webrtc.VideoRendererGui;
 
@@ -85,6 +87,8 @@ import common.helpers.FullScreenHelper;
 import common.helpers.SnackbarHelper;
 import common.helpers.TapHelper;
 import common.helpers.TrackingStateHelper;
+
+import org.webrtc.VideoSink;
 import org.webrtc.VideoSource;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -299,6 +303,9 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
     private String deviceName;
     private static int mMediaProjectionPermissionResultCode;
     private static Intent mMediaProjectionPermissionResultData;
+
+    SurfaceViewRenderer localVideoView;
+    SurfaceViewRenderer remoteVideoView;
 
 
     private static final String[] RequiredPermissions = new String[]{Manifest.permission.CAMERA};
@@ -757,9 +764,9 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
         // ta bort detta statet om du vill starta kameran på paddan
         if(deviceName.toLowerCase().equals("samsung sm-g950f")) {
 
-
-
-            localStream.videoTracks.get(0).addRenderer(new VideoRenderer(localRender));
+            localVideoView  = findViewById(R.id.remote_gl_surface_view);
+            localStream.videoTracks.get(0).addSink(localVideoView);
+            //localStream.videoTracks.get(0).addRenderer(new VideoRenderer(localRender));
 
 
             VideoRendererGui.update(localRender,
@@ -795,6 +802,7 @@ public class RtcActivity extends AppCompatActivity implements WebRtcClient.RtcLi
         //String deviceName = getDeviceName();
         if(deviceName.toLowerCase().equals("samsung sm-t830")){
             remoteStream.videoTracks.get(0).addRenderer(new VideoRenderer(remoteRender));
+            remoteStream.videoTracks.
 
             VideoRendererGui.update(localRender,
                     LOCAL_X_CONNECTED, LOCAL_Y_CONNECTED,
