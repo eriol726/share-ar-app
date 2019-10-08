@@ -108,8 +108,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                return;
 //            }
 //        }
-
-        start();
+        startScreenCapture();
+        Log.d(TAG, "tjaa");
+        //start();
 
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 //            //startScreenCapture();
@@ -123,18 +124,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "onActivityResult: ");
-        Log.d(TAG, "tja");
 
-        if (requestCode != CAPTURE_PERMISSION_REQUEST_CODE)
-            return;
-
-        mMediaProjectionPermissionResultCode = resultCode;
-        mMediaProjectionPermissionResultData = data;
-
-    }
 
 
     private void initViews() {
@@ -145,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         remoteVideoView = findViewById(R.id.remote_gl_surface_view);
         hangup.setOnClickListener(this);
         changeButton.setOnClickListener(this);
+        startButton.setOnClickListener(this);
 
     }
 
@@ -197,6 +188,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void start() {
         //Initialize PeerConnectionFactory globals.
+        Log.d(TAG,"Initialize PeerConnectionFactory globals");
         PeerConnectionFactory.InitializationOptions initializationOptions =
                 PeerConnectionFactory.InitializationOptions.builder(this)
                         .setEnableVideoHwAcceleration(true)
@@ -214,8 +206,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Now create a VideoCapturer instance.
         VideoCapturer videoCapturerAndroid;
         VideoCapturer v = createScreenCapturer();
-        videoCapturerAndroid = createCameraCapturer(new Camera1Enumerator(false));
-        //videoCapturerAndroid = v;
+        //videoCapturerAndroid = createCameraCapturer(new Camera1Enumerator(false));
+        videoCapturerAndroid = v;
+
+        Log.d(TAG, "videoCapturerAndroid: " + videoCapturerAndroid.isScreencast());
 
         //Create MediaConstraints - Will be useful for specifying video and audio constraints.
         audioConstraints = new MediaConstraints();
@@ -344,9 +338,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             try {
                 Log.d(TAG, "deviceName: " + deviceName);
                 if(deviceName.equals("samsung sm-t830")){
-                    remoteVideoView.setVisibility(View.VISIBLE);
-                    videoTrack.addSink(remoteVideoView);
+                    changeButton.setVisibility(View.INVISIBLE);
                 }
+
+                remoteVideoView.setVisibility(View.VISIBLE);
+
+                videoTrack.addSink(remoteVideoView);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -381,6 +378,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onJoinedRoom() {
         showToast("You joined the room " + gotUserMedia);
+
         if (gotUserMedia) {
             SignallingClient.getInstance().emitMessage("got user media");
         }
@@ -442,9 +440,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             Log.d(TAG, "deviceName: " + deviceName);
             if(deviceName.equals("samsung sm-t830")) {
-                updateVideoViews(true);
+                //changeButton.setVisibility(View.INVISIBLE);
             }
             //
+            updateVideoViews(true);
 
 
         } catch (JSONException e) {
@@ -469,8 +468,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         runOnUiThread(() -> {
             ViewGroup.LayoutParams params = localVideoView.getLayoutParams();
             if (remoteVisible) {
-                params.height = dpToPx(50);
-                params.width = dpToPx(50);
+                params.height = dpToPx(80);
+                params.width = dpToPx(80);
             } else {
                 params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             }
@@ -483,7 +482,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * Closing up - normal hangup and app destroye
      */
-
+    public void logger(){
+        Log.d(TAG, "logging from logger function");
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -492,17 +493,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
             case R.id.start: {
+                logger();
                 start();
+
+                startButton.setText("started");
 
 
                 break;
             }
             case R.id.change:{
+                logger();
                 if(changeButton.getText().equals("Start")){
                     changeButton.setText("Stop");
                 }else{
                     changeButton.setText("Start");
                 }
+                break;
             }
         }
     }
@@ -583,6 +589,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private VideoCapturer createScreenCapturer() {
         Log.d(TAG,"mMediaProjectionPermissionResultCode: " + mMediaProjectionPermissionResultCode);
         Log.d(TAG, "Activity.RESULT_OK: " + Activity.RESULT_OK);
+
         if (mMediaProjectionPermissionResultCode != Activity.RESULT_OK) {
             Log.d(TAG,"User didn't give permission to capture the screen.");
             return null;
@@ -594,6 +601,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d(TAG, "User revoked permission to capture the screen.");
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult: " + resultCode);
+        Log.d(TAG, "tja: " + data.getType());
+
+        if (requestCode != CAPTURE_PERMISSION_REQUEST_CODE)
+            return;
+
+        mMediaProjectionPermissionResultCode = resultCode;
+        mMediaProjectionPermissionResultData = data;
+
     }
 
     /** Returns the consumer friendly device name */
