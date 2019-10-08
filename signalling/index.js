@@ -12,7 +12,7 @@ var options = {
 };
 
 var fileServer = new(nodeStatic.Server)();
-var app = http.createServer(options,function(req, res) {
+var app = http.createServer(function(req, res) {
   fileServer.serve(req, res);
 
 }).listen(1794);

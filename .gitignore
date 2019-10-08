@@ -8,6 +8,9 @@ Step-1/.idea/
 # Java class files
 *.class
 
+signalling/node_modules
+WebRTC-server/node_modules
+
 #jar files
 *.jar
 *.so
