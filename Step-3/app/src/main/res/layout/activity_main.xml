@@ -18,9 +18,11 @@
         <org.webrtc.SurfaceViewRenderer
             android:id="@+id/remote_gl_surface_view"
             android:layout_width="match_parent"
-            android:layout_weight="1"
-            android:visibility="gone"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:scaleX="1.3"
+            android:scaleY="1.3"
+            android:translationY="100px"
+            android:visibility="gone" />
 
         <org.webrtc.SurfaceViewRenderer
             android:id="@+id/local_gl_surface_view"
@@ -31,10 +33,8 @@
         <android.opengl.GLSurfaceView
             android:id="@+id/surfaceview"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_gravity="top"/>
-
-
+            android:layout_height="match_parent"
+            android:layout_gravity="top" />
 
 
     </FrameLayout>

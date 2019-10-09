@@ -438,7 +438,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         if (videoCapturerAndroid != null) {
-            videoCapturerAndroid.startCapture(1024, 720, 30);
+            videoCapturerAndroid.startCapture(1024, 720, 15);
+
         }
         if(deviceName.equals("samsung sm-t830")){
             localVideoView.setVisibility(View.INVISIBLE);
@@ -877,8 +878,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             planeRenderer.createOnGlThread(/*context=*/ this, "models/trigrid.png");
             pointCloudRenderer.createOnGlThread(/*context=*/ this);
 
-            virtualObject.createOnGlThread(/*context=*/ this, "models/arrow.obj", "models/arrow_diffuse_2.png");
-            virtualObject.setMaterialProperties(0.0f, 2.0f, 0.5f, 6.0f);
+            virtualObject.createOnGlThread(/*context=*/ this, "models/arrow.obj", "models/arrow_diffuse_4.png");
+            virtualObject.setMaterialProperties(0.0f, 1.0f, 0.5f, 6.0f);
 
             virtualObjectShadow.createOnGlThread(
                     /*context=*/ this, "models/andy_shadow.obj", "models/andy_shadow.png");
@@ -967,7 +968,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     session.getAllTrackables(Plane.class), camera.getDisplayOrientedPose(), projmtx);
 
             // Visualize anchors created by touch.
-            float scaleFactor = 0.1f;
+            float scaleFactor = 0.15f;
             for (ColoredAnchor coloredAnchor : anchors) {
                 if (coloredAnchor.anchor.getTrackingState() != TrackingState.TRACKING) {
                     continue;
@@ -978,7 +979,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 // Update and draw the model and its shadow.
                 virtualObject.updateModelMatrix(anchorMatrix, scaleFactor);
-                virtualObjectShadow.updateModelMatrix(anchorMatrix, 1);
+                virtualObjectShadow.updateModelMatrix(anchorMatrix, 1.15f);
                 virtualObject.draw(viewmtx, projmtx, colorCorrectionRgba, coloredAnchor.color);
                 virtualObjectShadow.draw(viewmtx, projmtx, colorCorrectionRgba, coloredAnchor.color);
             }
