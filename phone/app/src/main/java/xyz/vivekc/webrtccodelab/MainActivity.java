@@ -197,15 +197,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.d(TAG,"Samsung SM-G950F +++++++++++++++++++");
 
 
-            surfaceView.setOnTouchListener(tapHelper);
-
-           surfaceView.setPreserveEGLContextOnPause(true);
-           surfaceView.setEGLContextClientVersion(2);
-           surfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0); // Alpha used for plane blending.
-           surfaceView.setRenderer(this);
-
-           surfaceView.setWillNotDraw(false);
-           surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+//            surfaceView.setOnTouchListener(tapHelper);
+//
+//            surfaceView.setPreserveEGLContextOnPause(true);
+//            surfaceView.setEGLContextClientVersion(2);
+//            surfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0); // Alpha used for plane blending.
+//            surfaceView.setRenderer(this);
+//
+//            surfaceView.setWillNotDraw(false);
+//            surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
 
 
@@ -254,7 +254,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onResume() {
         super.onResume();
         Log.d(TAG, "deviceName.toLowerCase(): " +  deviceName.toLowerCase() );
+        if(deviceName.equals("samsung sm-t830")){
 
+            surfaceView.onResume();
+//            if (client != null) {
+//                client.onResume();
+//            }
+        }
+        else{
             if (session == null) {
                 Exception exception = null;
                 String message = null;
@@ -318,9 +325,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
 
 
-            surfaceView.onResume();
+            //surfaceView.onResume();
             displayRotationHelper.onResume();
-
+        }
 
     }
 
@@ -434,8 +441,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             videoCapturerAndroid.startCapture(1024, 720, 15);
 
         }
+
+        localVideoView.setVisibility(View.VISIBLE);
         if(deviceName.equals("samsung sm-t830")){
-            localVideoView.setVisibility(View.INVISIBLE);
+            localVideoView.setVisibility(View.VISIBLE);
 
         }else{
             localVideoTrack.addSink(localVideoView);
