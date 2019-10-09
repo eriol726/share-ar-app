@@ -86,7 +86,7 @@ import common.helpers.FullScreenHelper;
 import common.helpers.SnackbarHelper;
 import common.helpers.TapHelper;
 import common.helpers.TrackingStateHelper;
-
+// https://github.com/google-ar/arcore-android-sdk/blob/master/samples/hello_ar_java/app/src/main/java/com/google/ar/core/examples/java/helloar/HelloArActivity.java
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SignallingClient.SignalingInterface,  GLSurfaceView.Renderer {
     PeerConnectionFactory peerConnectionFactory;
@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     SurfaceViewRenderer localVideoView;
     SurfaceViewRenderer remoteVideoView;
+    private GLSurfaceView surfaceView;
 
     Button hangup;
     PeerConnection localPeer;
@@ -142,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private boolean done = false;
     private boolean hasAcandidate = false;
 
-    private GLSurfaceView surfaceView;
+
 
     private final ArrayList<ColoredAnchor> anchors = new ArrayList<>();
 
@@ -154,14 +155,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        deviceName = getDeviceName().toLowerCase();
+        surfaceView = (GLSurfaceView) findViewById(R.id.surfaceview);
+        displayRotationHelper = new DisplayRotationHelper(/*context=*/ this);
+        //deviceName = getDeviceName().toLowerCase();
 
         //startActivityForResult(mMediaProjectionPermissionResultData,0);
 
-        initViews();
-        initVideos();
-        getIceServers();
-        SignallingClient.getInstance().init(this);
+        //initViews();
+        //initVideos();
+//        getIceServers();
+//        SignallingClient.getInstance().init(this);
 
 
 //        for (String permission : MANDATORY_PERMISSIONS) {
@@ -185,33 +188,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            e.printStackTrace();
 //        }
 
-        surfaceView = (GLSurfaceView) findViewById(R.id.surfaceview);
+
         //surfaceView.setPreserveEGLContextOnPause(true);
         //final List<String> segments = intent.getData().getPathSegments();
-        displayRotationHelper = new DisplayRotationHelper(/*context=*/ this);
+
 
         // Set up tap listener.
-        tapHelper = new TapHelper(/*context=*/ this);
-
-
-            Log.d(TAG,"Samsung SM-G950F +++++++++++++++++++");
-
-
-            surfaceView.setOnTouchListener(tapHelper);
-
-           surfaceView.setPreserveEGLContextOnPause(true);
-           surfaceView.setEGLContextClientVersion(2);
-           surfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0); // Alpha used for plane blending.
-           surfaceView.setRenderer(this);
-
-           surfaceView.setWillNotDraw(false);
-           surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+        //tapHelper = new TapHelper(/*context=*/ this);
 
 
 
 
 
-            Log.d(TAG, "Samsung T830 +++++++++++++++++++");
+
+
+
 //            surfaceView.setPreserveEGLContextOnPause(true);
 //            surfaceView.setKeepScreenOn(true);
 //            VideoRendererGui.setView(surfaceView, new Runnable() {
@@ -223,109 +214,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if(deviceName.equals("samsung sm-t830")){
-
-            surfaceView.onPause();
-//            if (client != null) {
-//                client.onPause();
-//            }
-        }
-
-
-        if (session != null) {
-            // Note that the order matters - GLSurfaceView is paused first so that it does not try
-            // to query the session. If Session is paused before GLSurfaceView, GLSurfaceView may
-            // still call session.update() and get a SessionPausedException.
-            displayRotationHelper.onPause();
-
-
-            surfaceView.onPause();
-            session.pause();
-
-
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(TAG, "deviceName.toLowerCase(): " +  deviceName.toLowerCase() );
-
-            if (session == null) {
-                Exception exception = null;
-                String message = null;
-                try {
-                    switch (ArCoreApk.getInstance().requestInstall(this, !installRequested)) {
-                        case INSTALL_REQUESTED:
-                            installRequested = true;
-                            return;
-                        case INSTALLED:
-                            break;
-                    }
-
-                    // ARCore requires camera permissions to operate. If we did not yet obtain runtime
-                    // permission on Android M and above, now is a good time to ask the user for it.
-                    if (!CameraPermissionHelper.hasCameraPermission(this)) {
-                        CameraPermissionHelper.requestCameraPermission(this);
-                        return;
-                    }
-
-                    // Create the session.
-                    session = new Session(/* context= */ this);
-
-                } catch (UnavailableArcoreNotInstalledException
-                        | UnavailableUserDeclinedInstallationException e) {
-                    message = "Please install ARCore";
-                    exception = e;
-                } catch (UnavailableApkTooOldException e) {
-                    message = "Please update ARCore";
-                    exception = e;
-                } catch (UnavailableSdkTooOldException e) {
-                    message = "Please update this app";
-                    exception = e;
-                } catch (UnavailableDeviceNotCompatibleException e) {
-                    message = "This device does not support AR";
-                    exception = e;
-                } catch (Exception e) {
-                    message = "Failed to create AR session";
-                    exception = e;
-                }
-
-                if (message != null) {
-                    messageSnackbarHelper.showError(this, message);
-                    Log.e(TAG, "Exception creating session", exception);
-                    return;
-                }
-            }
-
-            // Note that order matters - see the note in onPause(), the reverse applies here.
-            try {
-                Log.d(TAG,"test");
-
-                session.resume();
-
-            } catch (CameraNotAvailableException e) {
-                // In some cases (such as another camera app launching) the camera may be given to
-                // a different app instead. Handle this properly by showing a message and recreate the
-                // session at the next iteration.
-                messageSnackbarHelper.showError(this, "Camera not available. Please restart the app.");
-                session = null;
-                return;
-            }
-
-
-            surfaceView.onResume();
-            displayRotationHelper.onResume();
-
-
-    }
-
-
-
 
     private void initViews() {
         hangup = findViewById(R.id.end_call);
@@ -346,6 +234,107 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         localVideoView.setZOrderMediaOverlay(true);
         remoteVideoView.setZOrderMediaOverlay(true);
     }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (session == null) {
+            Exception exception = null;
+            String message = null;
+            try {
+                switch (ArCoreApk.getInstance().requestInstall(this, !installRequested)) {
+                    case INSTALL_REQUESTED:
+                        installRequested = true;
+                        return;
+                    case INSTALLED:
+                        break;
+                }
+
+                // ARCore requires camera permissions to operate. If we did not yet obtain runtime
+                // permission on Android M and above, now is a good time to ask the user for it.
+                if (!CameraPermissionHelper.hasCameraPermission(this)) {
+                    CameraPermissionHelper.requestCameraPermission(this);
+                    return;
+                }
+
+                // Create the session.
+                session = new Session(/* context= */ this);
+
+            } catch (UnavailableArcoreNotInstalledException
+                    | UnavailableUserDeclinedInstallationException e) {
+                message = "Please install ARCore";
+                exception = e;
+            } catch (UnavailableApkTooOldException e) {
+                message = "Please update ARCore";
+                exception = e;
+            } catch (UnavailableSdkTooOldException e) {
+                message = "Please update this app";
+                exception = e;
+            } catch (UnavailableDeviceNotCompatibleException e) {
+                message = "This device does not support AR";
+                exception = e;
+            } catch (Exception e) {
+                message = "Failed to create AR session";
+                exception = e;
+            }
+
+            if (message != null) {
+                messageSnackbarHelper.showError(this, message);
+                Log.e(TAG, "Exception creating session", exception);
+                return;
+            }
+        }
+
+        // Note that order matters - see the note in onPause(), the reverse applies here.
+        try {
+            session.resume();
+        } catch (CameraNotAvailableException e) {
+            // In some cases (such as another camera app launching) the camera may be given to
+            // a different app instead. Handle this properly by showing a message and recreate the
+            // session at the next iteration.
+            messageSnackbarHelper.showError(this, "Camera not available. Please restart the app.");
+            session = null;
+            return;
+        }
+
+        //surfaceView.onResume();
+        //displayRotationHelper.onResume();
+
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (session != null) {
+            // Note that the order matters - GLSurfaceView is paused first so that it does not try
+            // to query the session. If Session is paused before GLSurfaceView, GLSurfaceView may
+            // still call session.update() and get a SessionPausedException.
+            displayRotationHelper.onPause();
+            surfaceView.onPause();
+            session.pause();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] results) {
+        if (!CameraPermissionHelper.hasCameraPermission(this)) {
+            Toast.makeText(this, "Camera permission is needed to run this application", Toast.LENGTH_LONG)
+                    .show();
+            if (!CameraPermissionHelper.shouldShowRequestPermissionRationale(this)) {
+                // Permission denied with checking "Do not ask again".
+                CameraPermissionHelper.launchPermissionSettings(this);
+            }
+            finish();
+        }
+    }
+
+
+
+
+
 
     private void getIceServers() {
         //get Ice servers using xirsys
@@ -548,7 +537,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             try {
                 Log.d(TAG, "deviceName: " + deviceName);
                 if(deviceName.equals("samsung sm-t830")){
-                    changeButton.setVisibility(View.INVISIBLE);
+                    //changeButton.setVisibility(View.INVISIBLE);
                     remoteVideoView.setVisibility(View.VISIBLE);
                 }
 
@@ -717,6 +706,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 logger();
                 if(changeButton.getText().equals("Start")){
                     changeButton.setText("Stop");
+                    // Set up tap listener.
+                    tapHelper = new TapHelper(/*context=*/ this);
+                    surfaceView.setOnTouchListener(tapHelper);
+
+                    // Set up renderer.
+                    surfaceView.setPreserveEGLContextOnPause(true);
+                    surfaceView.setEGLContextClientVersion(2);
+                    surfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0); // Alpha used for plane blending.
+                    surfaceView.setRenderer(this);
+                    surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+                    surfaceView.setWillNotDraw(false);
+
+                    installRequested = false;
+
                 }else{
                     changeButton.setText("Start");
                 }
