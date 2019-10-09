@@ -188,13 +188,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         surfaceView = (GLSurfaceView) findViewById(R.id.surfaceview);
         //surfaceView.setPreserveEGLContextOnPause(true);
         //final List<String> segments = intent.getData().getPathSegments();
+        displayRotationHelper = new DisplayRotationHelper(/*context=*/ this);
 
-        if(deviceName.toLowerCase().equals("samsung sm-g950f")) {
+        // Set up tap listener.
+        tapHelper = new TapHelper(/*context=*/ this);
+
+
             Log.d(TAG,"Samsung SM-G950F +++++++++++++++++++");
-            displayRotationHelper = new DisplayRotationHelper(/*context=*/ this);
 
-            // Set up tap listener.
-            tapHelper = new TapHelper(/*context=*/ this);
 
             surfaceView.setOnTouchListener(tapHelper);
 
@@ -209,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-        }else {
+
             Log.d(TAG, "Samsung T830 +++++++++++++++++++");
 //            surfaceView.setPreserveEGLContextOnPause(true);
 //            surfaceView.setKeepScreenOn(true);
@@ -219,14 +220,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                    init();
 //                }
 //            });
-        }
+
 
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if(deviceName.toLowerCase() == "samsung sm-t830"){
+        if(deviceName.equals("samsung sm-t830")){
 
             surfaceView.onPause();
 //            if (client != null) {
@@ -253,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onResume() {
         super.onResume();
         Log.d(TAG, "deviceName.toLowerCase(): " +  deviceName.toLowerCase() );
-        if(deviceName.toLowerCase().equals("samsung sm-t830")){
+        if(deviceName.equals("samsung sm-t830")){
 
             surfaceView.onResume();
 //            if (client != null) {
@@ -441,11 +442,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if(deviceName.equals("samsung sm-t830")){
             localVideoView.setVisibility(View.INVISIBLE);
+
+        }else{
+            localVideoTrack.addSink(localVideoView);
         }
 
         // And finally, with our VideoRenderer ready, we
         // can add our renderer to the VideoTrack.
-        localVideoTrack.addSink(localVideoView);
+
 
         //localVideoView.setMirror(true);
         //remoteVideoView.setMirror(true);
