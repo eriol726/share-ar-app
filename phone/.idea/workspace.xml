@@ -7,16 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e0b404c7-a144-4250-a739-6e1edc992d03" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../Step-3/app/src/main/java/xyz/vivekc/webrtccodelab/MyGLRenderer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Step-3/app/src/main/java/xyz/vivekc/webrtccodelab/MyGLSurfaceView.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Step-3/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Step-3/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Step-3/app/src/main/java/xyz/vivekc/webrtccodelab/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Step-3/app/src/main/java/xyz/vivekc/webrtccodelab/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Step-3/app/src/main/java/xyz/vivekc/webrtccodelab/SignallingClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Step-3/app/src/main/java/xyz/vivekc/webrtccodelab/SignallingClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Step-3/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Step-3/app/src/main/res/layout/activity_main.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/xyz/vivekc/webrtccodelab/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/xyz/vivekc/webrtccodelab/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/xyz/vivekc/webrtccodelab/SignallingClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/xyz/vivekc/webrtccodelab/SignallingClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -144,9 +136,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="217" />
-    <option name="y" value="24" />
-    <option name="width" value="821" />
+    <option name="x" value="-7" />
+    <option name="width" value="1208" />
     <option name="height" value="1167" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -309,6 +300,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1176" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
       <window_info id="Capture Tool" order="1" />

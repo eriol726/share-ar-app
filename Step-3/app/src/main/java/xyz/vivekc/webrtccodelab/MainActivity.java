@@ -404,23 +404,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         audioSource = peerConnectionFactory.createAudioSource(audioConstraints);
         localAudioTrack = peerConnectionFactory.createAudioTrack("101", audioSource);
 
-
+        // this one destroy the ar session
         if (videoCapturerAndroid != null) {
-            videoCapturerAndroid.startCapture(1024, 720, 15);
+            //videoCapturerAndroid.startCapture(1024, 720, 15);
 
         }
-        if(deviceName.equals("samsung sm-t830")){
-            //localVideoView.setVisibility(View.INVISIBLE);
 
-        }else{
-            //localVideoTrack.addSink(localVideoView);
-        }
-        localVideoView.setVisibility(View.VISIBLE);
-        localVideoTrack.addSink(localVideoView);
+
 
         // And finally, with our VideoRenderer ready, we
         // can add our renderer to the VideoTrack.
-
+        localVideoView.setVisibility(View.VISIBLE);
+        localVideoTrack.addSink(localVideoView);
+        localVideoTrack.
 
         //localVideoView.setMirror(true);
         //remoteVideoView.setMirror(true);
@@ -475,6 +471,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onAddStream(MediaStream mediaStream) {
                 showToast("Received Remote stream");
+
                 super.onAddStream(mediaStream);
                 gotRemoteStream(mediaStream);
             }
@@ -527,9 +524,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     //changeButton.setVisibility(View.INVISIBLE);
                 remoteVideoView.setVisibility(View.VISIBLE);
-
-
-
 
                 videoTrack.addSink(remoteVideoView);
 
@@ -625,12 +619,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try {
             localPeer.setRemoteDescription(new CustomSdpObserver("localSetRemote"), new SessionDescription(SessionDescription.Type.fromCanonicalForm(data.getString("type").toLowerCase()), data.getString("sdp")));
 
-
-            Log.d(TAG, "deviceName: " + deviceName);
-            if(deviceName.equals("samsung sm-t830")) {
-                //changeButton.setVisibility(View.INVISIBLE);
-            }
-            //
             updateVideoViews(true);
 
 
@@ -656,6 +644,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         runOnUiThread(() -> {
             ViewGroup.LayoutParams params = localVideoView.getLayoutParams();
             //the small remote display in the corner
+            Log.d(TAG, "remoteVisible: " + remoteVisible);
             if (remoteVisible) {
                 params.height = dpToPx(150);
                 params.width = dpToPx(150);
@@ -897,7 +886,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // camera framerate.
             Frame frame = session.update();
             Camera camera = frame.getCamera();
-
+            Frame newCamera =  localVideoView.getContext().;
+            localVideoView.getLayoutParams();
             // Handle one tap per frame.
             handleTap(frame, camera);
 

@@ -7,16 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32422d9f-b683-469f-932f-b4ee6605377d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/xyz/vivekc/webrtccodelab/MyGLRenderer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/xyz/vivekc/webrtccodelab/MyGLSurfaceView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/xyz/vivekc/webrtccodelab/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/xyz/vivekc/webrtccodelab/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/xyz/vivekc/webrtccodelab/SignallingClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/xyz/vivekc/webrtccodelab/SignallingClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../phone/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../phone/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../phone/app/src/main/java/xyz/vivekc/webrtccodelab/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/../phone/app/src/main/java/xyz/vivekc/webrtccodelab/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../phone/app/src/main/java/xyz/vivekc/webrtccodelab/SignallingClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/../phone/app/src/main/java/xyz/vivekc/webrtccodelab/SignallingClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../phone/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../phone/app/src/main/res/layout/activity_main.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -48,15 +40,6 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/xyz/vivekc/webrtccodelab/CustomPeerConnectionObserver.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-519">
-              <caret line="15" column="6" selection-start-line="15" selection-start-column="6" selection-end-line="15" selection-end-column="6" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/xyz/vivekc/webrtccodelab/IceServer.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="85">
@@ -68,11 +51,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/xyz/vivekc/webrtccodelab/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="329">
-              <caret line="286" column="45" lean-forward="true" selection-start-line="217" selection-end-line="286" selection-end-column="45" />
+            <state relative-caret-position="280">
+              <caret line="888" column="42" selection-start-line="888" selection-start-column="42" selection-end-line="888" selection-end-column="42" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#22381#22382#0" expanded="true" />
+                <element signature="e#22258#22259#0" expanded="true" />
                 <element signature="e#25438#25439#0" expanded="true" />
                 <element signature="e#25496#25497#0" expanded="true" />
               </folding>
@@ -81,31 +64,50 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
+        <entry file="jar://$USER_HOME$/AppData/Local/Android/platforms/android-27/android.jar!/android/view/View.class">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="1" column="40" selection-start-line="1" selection-start-column="40" selection-end-line="1" selection-end-column="40" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/xyz/vivekc/webrtccodelab/MyGLSurfaceView.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="11" column="35" selection-start-line="11" selection-start-column="35" selection-end-line="11" selection-end-column="35" />
+            <state relative-caret-position="218">
+              <caret line="1700" column="24" selection-start-line="1700" selection-start-column="24" selection-end-line="1700" selection-end-column="24" />
               <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="e#50332#50333#0" expanded="true" />
+                <element signature="e#50383#50384#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.android.support/appcompat-v7/27.0.2/4ae031a24f432a35efae0d609731c5a34e65696c/appcompat-v7-27.0.2-sources.jar!/android/support/v7/app/AppCompatActivity.java">
+        <entry file="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/0271aeca91c182782d67db15657da042/google-webrtc-1.0.22672/jars/classes.jar!/org/webrtc/SurfaceViewRenderer.class">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-290">
-              <caret line="60" column="13" selection-start-line="60" selection-start-column="13" selection-end-line="60" selection-end-column="13" />
+            <state relative-caret-position="272">
+              <caret line="33" column="30" lean-forward="true" selection-start-line="33" selection-start-column="30" selection-end-line="33" selection-end-column="30" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/ca85044255df4ccdc9db5d31a4118d64/core-1.12.0/jars/classes.jar!/com/google/ar/core/Frame.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-2380">
+              <caret line="21" column="13" lean-forward="true" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/ca85044255df4ccdc9db5d31a4118d64/core-1.12.0/jars/classes.jar!/com/google/ar/core/Session.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-2244">
+              <caret line="40" column="13" selection-start-line="40" selection-start-column="13" selection-end-line="40" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/common/rendering/BackgroundRenderer.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="238">
+              <caret line="120" column="39" selection-start-line="120" selection-start-column="34" selection-end-line="120" selection-end-column="39" />
             </state>
           </provider>
         </entry>
@@ -133,15 +135,6 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/common/helpers/DisplayRotationHelper.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="220">
-              <caret line="53" column="76" selection-start-line="53" selection-start-column="76" selection-end-line="53" selection-end-column="76" />
-            </state>
-          </provider>
-        </entry>
-      </file>
     </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
@@ -153,15 +146,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>initViews</find>
-      <find>No keypoints to prune</find>
-      <find>displayRotationHelper</find>
-      <find>tapHelper</find>
-      <find>onResume()</find>
-      <find>arerror</find>
-      <find>surfaceView</find>
-      <find>displayRotationHelper = new DisplayRotationHelper(/*context=*/ this);</find>
-      <find>SurfaceViewRenderer</find>
       <find>gl</find>
       <find>button pushed</find>
       <find>Create the session</find>
@@ -183,6 +167,15 @@
       <find>initVideos</find>
       <find>inv</find>
       <find>.eq</find>
+      <find>initVideos()</find>
+      <find>start()</find>
+      <find>updateVideoViews</find>
+      <find>remoteVideoView.setVisibility(View.VISIBLE);</find>
+      <find>View.VISIBLE</find>
+      <find>remoteVisible</find>
+      <find>localVideoTrack</find>
+      <find>rendererEvents</find>
+      <find>localVideoView</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -202,10 +195,9 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="217" />
-    <option name="y" value="24" />
-    <option name="width" value="821" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="-7" />
+    <option name="width" value="1208" />
     <option name="height" value="1167" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -408,12 +400,12 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1176" extended-state="6" />
+    <frame x="-7" y="0" width="1208" height="1167" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
       <window_info id="Capture Tool" order="1" />
-      <window_info content_ui="combo" id="Project" order="2" visible="true" weight="0.1663113" />
+      <window_info active="true" content_ui="combo" id="Project" order="2" visible="true" weight="0.271777" />
       <window_info id="Structure" order="3" side_tool="true" />
       <window_info id="Build Variants" order="4" side_tool="true" />
       <window_info id="Image Layers" order="5" />
@@ -424,7 +416,7 @@
       <window_info anchor="bottom" id="TODO" order="1" />
       <window_info anchor="bottom" id="Android Profiler" order="2" />
       <window_info anchor="bottom" id="Debug" order="3" />
-      <window_info active="true" anchor="bottom" id="Run" order="4" sideWeight="0.49918962" visible="true" weight="0.3254902" />
+      <window_info anchor="bottom" id="Run" order="4" sideWeight="0.49918962" visible="true" weight="0.32542038" />
       <window_info anchor="bottom" id="Event Log" order="5" sideWeight="0.5008104" side_tool="true" weight="0.32496077" />
       <window_info anchor="bottom" id="Version Control" order="6" weight="0.32967034" />
       <window_info anchor="bottom" id="Build" order="7" weight="0.32941177" />
@@ -486,16 +478,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="25">
           <caret line="12" column="6" selection-start-line="12" selection-start-column="6" selection-end-line="12" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/0271aeca91c182782d67db15657da042/google-webrtc-1.0.22672/jars/classes.jar!/org/webrtc/SurfaceViewRenderer.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2408">
-          <caret line="27" column="28" selection-start-line="27" selection-start-column="26" selection-end-line="27" selection-end-column="28" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -571,13 +553,52 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/ca85044255df4ccdc9db5d31a4118d64/core-1.12.0/jars/classes.jar!/com/google/ar/core/Session.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2244">
+          <caret line="40" column="13" selection-start-line="40" selection-start-column="13" selection-end-line="40" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/ca85044255df4ccdc9db5d31a4118d64/core-1.12.0/jars/classes.jar!/com/google/ar/core/Frame.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2380">
+          <caret line="21" column="13" lean-forward="true" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/common/rendering/BackgroundRenderer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="120" column="39" selection-start-line="120" selection-start-column="34" selection-end-line="120" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/0271aeca91c182782d67db15657da042/google-webrtc-1.0.22672/jars/classes.jar!/org/webrtc/SurfaceViewRenderer.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="33" column="30" lean-forward="true" selection-start-line="33" selection-start-column="30" selection-end-line="33" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/AppData/Local/Android/platforms/android-27/android.jar!/android/view/View.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="218">
+          <caret line="1700" column="24" selection-start-line="1700" selection-start-column="24" selection-end-line="1700" selection-end-column="24" />
+          <folding>
+            <element signature="e#50332#50333#0" expanded="true" />
+            <element signature="e#50383#50384#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/xyz/vivekc/webrtccodelab/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="329">
-          <caret line="286" column="45" lean-forward="true" selection-start-line="217" selection-end-line="286" selection-end-column="45" />
+        <state relative-caret-position="280">
+          <caret line="888" column="42" selection-start-line="888" selection-start-column="42" selection-end-line="888" selection-end-column="42" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#22381#22382#0" expanded="true" />
+            <element signature="e#22258#22259#0" expanded="true" />
             <element signature="e#25438#25439#0" expanded="true" />
             <element signature="e#25496#25497#0" expanded="true" />
           </folding>
