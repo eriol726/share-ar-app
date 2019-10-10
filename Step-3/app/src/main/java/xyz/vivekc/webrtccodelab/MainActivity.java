@@ -415,7 +415,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // And finally, with our VideoRenderer ready, we
         // can add our renderer to the VideoTrack.
-        localVideoView.setVisibility(View.VISIBLE);
+        //localVideoView.setVisibility(View.VISIBLE);
         localVideoTrack.addSink(localVideoView);
 
 
@@ -523,8 +523,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             try {
                 Log.d(TAG, "deviceName: " + deviceName);
 
-                    //changeButton.setVisibility(View.INVISIBLE);
-                remoteVideoView.setVisibility(View.VISIBLE);
+                //changeButton.setVisibility(View.INVISIBLE);
+                //remoteVideoView.setVisibility(View.VISIBLE);
 
                 videoTrack.addSink(remoteVideoView);
 
@@ -617,21 +617,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onAnswerReceived(JSONObject data) {
         showToast("Received Answer");
+        Log.d(TAG,"Received Answer");
         try {
-
+            Log.d(TAG,"try Received Answer");
             localPeer.setRemoteDescription(new CustomSdpObserver("localSetRemote"), new SessionDescription(SessionDescription.Type.fromCanonicalForm(data.getString("type").toLowerCase()), data.getString("sdp")));
             try {
+                Log.d(TAG,"new session created");
                 session = new Session(localVideoView.getContext());
             } catch (UnavailableArcoreNotInstalledException e) {
+                Log.d(TAG, "Please install ARCore, arerror");
                 e.printStackTrace();
             } catch (UnavailableApkTooOldException e) {
+                Log.d(TAG, "Please update ARCore, arerror");
                 e.printStackTrace();
             } catch (UnavailableSdkTooOldException e) {
+                Log.d(TAG, "Please update ARCore, arerror");
                 e.printStackTrace();
             } catch (UnavailableDeviceNotCompatibleException e) {
+                Log.d(TAG, "This device does not support AR, arerror");
                 e.printStackTrace();
             }
-            updateVideoViews(true);
+            //updateVideoViews(true);
 
 
         } catch (JSONException e) {
@@ -908,13 +914,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             // Visualize tracked points.
             // Use try-with-resources to automatically release the point cloud.
-            try (PointCloud pointCloud = frame.acquirePointCloud()) {
+            PointCloud pointCloud = frame.acquirePointCloud();
                 pointCloudRenderer.update(pointCloud);
                 pointCloudRenderer.draw(viewmtx, projmtx);
-            }
+
 
             // No tracking error at this point. If we detected any plane, then hide the
             // message UI, otherwise show searchingPlane message.
+
             if (hasTrackingPlane()) {
                 messageSnackbarHelper.hide(this);
             } else {

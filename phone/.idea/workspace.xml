@@ -7,17 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5cb2f777-79b4-4da9-8552-6b545857e237" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../Step-3/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/../Step-3/.idea/caches/build_file_checksums.ser" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Step-3/.idea/caches/gradle_models.ser" beforeDir="false" afterPath="$PROJECT_DIR$/../Step-3/.idea/caches/gradle_models.ser" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Step-3/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Step-3/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Step-3/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Step-3/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Step-3/app/src/main/java/xyz/vivekc/webrtccodelab/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Step-3/app/src/main/java/xyz/vivekc/webrtccodelab/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Step-3/app/src/main/java/xyz/vivekc/webrtccodelab/SignallingClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Step-3/app/src/main/java/xyz/vivekc/webrtccodelab/SignallingClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/gradle_models.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/gradle_models.ser" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/xyz/vivekc/webrtccodelab/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/xyz/vivekc/webrtccodelab/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/xyz/vivekc/webrtccodelab/SignallingClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/xyz/vivekc/webrtccodelab/SignallingClient.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -74,6 +65,7 @@
       <find>start()</find>
       <find>remoteVideoView</find>
       <find>start</find>
+      <find>videoCapturerAndroid</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -243,7 +235,7 @@
       <window_info id="Capture Tool" />
       <window_info id="Favorites" side_tool="true" />
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Run" visible="true" weight="0.26766092" />
+      <window_info anchor="bottom" id="Run" weight="0.26766092" />
       <window_info anchor="bottom" id="Logcat" />
       <window_info anchor="bottom" id="Version Control" />
       <window_info anchor="bottom" id="TODO" />
