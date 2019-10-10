@@ -439,17 +439,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (videoCapturerAndroid != null) {
             videoCapturerAndroid.startCapture(1024, 720, 15);
-
         }
 
         localVideoView.setVisibility(View.VISIBLE);
-
         localVideoTrack.addSink(localVideoView);
-
 
         // And finally, with our VideoRenderer ready, we
         // can add our renderer to the VideoTrack.
-
 
         //localVideoView.setMirror(true);
         //remoteVideoView.setMirror(true);

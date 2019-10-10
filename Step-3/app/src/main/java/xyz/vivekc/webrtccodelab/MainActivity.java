@@ -241,6 +241,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Log.d(TAG, "Create the session");
                     session = new Session(/* context= */ this);
 
+
                 } catch (UnavailableArcoreNotInstalledException
                         | UnavailableUserDeclinedInstallationException e) {
                     message = "Please install ARCore";
@@ -416,7 +417,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // can add our renderer to the VideoTrack.
         localVideoView.setVisibility(View.VISIBLE);
         localVideoTrack.addSink(localVideoView);
-        localVideoTrack.
+
 
         //localVideoView.setMirror(true);
         //remoteVideoView.setMirror(true);
@@ -617,8 +618,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onAnswerReceived(JSONObject data) {
         showToast("Received Answer");
         try {
-            localPeer.setRemoteDescription(new CustomSdpObserver("localSetRemote"), new SessionDescription(SessionDescription.Type.fromCanonicalForm(data.getString("type").toLowerCase()), data.getString("sdp")));
 
+            localPeer.setRemoteDescription(new CustomSdpObserver("localSetRemote"), new SessionDescription(SessionDescription.Type.fromCanonicalForm(data.getString("type").toLowerCase()), data.getString("sdp")));
+            try {
+                session = new Session(localVideoView.getContext());
+            } catch (UnavailableArcoreNotInstalledException e) {
+                e.printStackTrace();
+            } catch (UnavailableApkTooOldException e) {
+                e.printStackTrace();
+            } catch (UnavailableSdkTooOldException e) {
+                e.printStackTrace();
+            } catch (UnavailableDeviceNotCompatibleException e) {
+                e.printStackTrace();
+            }
             updateVideoViews(true);
 
 
@@ -763,34 +775,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return null;
     }
 
-
-    private void startScreenCapture() {
-        MediaProjectionManager mediaProjectionManager2 = (MediaProjectionManager) MainActivity.this.getSystemService(MEDIA_PROJECTION_SERVICE);
-        MediaProjectionManager mediaProjectionManager =
-                (MediaProjectionManager) getApplication().getSystemService(
-                        Context.MEDIA_PROJECTION_SERVICE);
-        Log.d(TAG,"mediaProjectionManager: " + mediaProjectionManager);
-        startActivityForResult(
-                mediaProjectionManager.createScreenCaptureIntent(), CAPTURE_PERMISSION_REQUEST_CODE);
-    }
-
-    private VideoCapturer createScreenCapturer() {
-        Log.d(TAG,"mMediaProjectionPermissionResultCode: " + mMediaProjectionPermissionResultCode);
-        Log.d(TAG, "Activity.RESULT_OK: " + Activity.RESULT_OK);
-
-        if (mMediaProjectionPermissionResultCode != Activity.RESULT_OK) {
-            Log.d(TAG,"User didn't give permission to capture the screen.");
-            return null;
-        }
-        return new ScreenCapturerAndroid(
-                mMediaProjectionPermissionResultData, new MediaProjection.Callback() {
-            @Override
-            public void onStop() {
-                Log.d(TAG, "User revoked permission to capture the screen.");
-            }
-        });
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult: " + resultCode);
@@ -871,6 +855,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Clear screen to notify driver it should not load any pixels from previous frame.
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
+
+
         if (session == null) {
             return;
         }
@@ -884,9 +870,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // Obtain the current frame from ARSession. When the configuration is set to
             // UpdateMode.BLOCKING (it is by default), this will throttle the rendering to the
             // camera framerate.
+
+
             Frame frame = session.update();
             Camera camera = frame.getCamera();
-            Frame newCamera =  localVideoView.getContext().;
+
             localVideoView.getLayoutParams();
             // Handle one tap per frame.
             handleTap(frame, camera);
