@@ -73,7 +73,7 @@ class SignallingClient {
             IO.setDefaultSSLContext(sslcontext);
             //set the socket.io url here
 
-            socket = IO.socket("http://192.168.10.176:1794");
+            socket = IO.socket("http://192.168.2.194:1794");
             socket.connect();
             Log.d("SignallingClient", "init() called");
 

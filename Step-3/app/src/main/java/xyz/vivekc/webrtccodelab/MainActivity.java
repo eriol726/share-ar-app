@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     PeerConnection localPeer;
     List<IceServer> iceServers;
     EglBase rootEglBase;
+    boolean startSteam =false;
 
     private static final int CAPTURE_PERMISSION_REQUEST_CODE = 1;
     //    private EglBase rootEglBase;
@@ -180,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         surfaceView.setEGLContextClientVersion(2);
         surfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0); // Alpha used for plane blending.
         surfaceView.setRenderer(this);
-        surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+        surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         surfaceView.setWillNotDraw(false);
 
         installRequested = false;
@@ -239,7 +240,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     // Create the session.
                     Log.d(TAG, "Create the session");
+
+
                     session = new Session(/* context= */ this);
+
+
 
 
                 } catch (UnavailableArcoreNotInstalledException
@@ -294,6 +299,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onPause() {
+        Log.d(TAG, "session is paused");
         super.onPause();
         if (session != null) {
             // Note that the order matters - GLSurfaceView is paused first so that it does not try
@@ -407,7 +413,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // this one destroy the ar session
         if (videoCapturerAndroid != null) {
-            //videoCapturerAndroid.startCapture(1024, 720, 15);
+            videoCapturerAndroid.startCapture(1024, 720, 15);
 
         }
 
@@ -415,12 +421,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // And finally, with our VideoRenderer ready, we
         // can add our renderer to the VideoTrack.
-        //localVideoView.setVisibility(View.VISIBLE);
+        localVideoView.setVisibility(View.VISIBLE);
         localVideoTrack.addSink(localVideoView);
 
 
         //localVideoView.setMirror(true);
         //remoteVideoView.setMirror(true);
+
+        //surfaceView.setRenderer(localVideoView.getContext());
 
         Log.d(TAG, "gotUserMedia = true");
         gotUserMedia = true;
@@ -471,6 +479,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onAddStream(MediaStream mediaStream) {
+//                try {
+//                    Log.d(TAG,"new session created, arerror");
+//                    session = new Session(localVideoView.getContext());
+//
+//                } catch (UnavailableArcoreNotInstalledException e) {
+//                    Log.d(TAG, "Please install ARCore, arerror");
+//                    e.printStackTrace();
+//                } catch (UnavailableApkTooOldException e) {
+//                    Log.d(TAG, "Please update ARCore, arerror");
+//                    e.printStackTrace();
+//                } catch (UnavailableSdkTooOldException e) {
+//                    Log.d(TAG, "Please update ARCore, arerror");
+//                    e.printStackTrace();
+//                } catch (UnavailableDeviceNotCompatibleException e) {
+//                    Log.d(TAG, "This device does not support AR, arerror");
+//                    e.printStackTrace();
+//                }
                 showToast("Received Remote stream");
 
                 super.onAddStream(mediaStream);
@@ -524,11 +549,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d(TAG, "deviceName: " + deviceName);
 
                 //changeButton.setVisibility(View.INVISIBLE);
-                //remoteVideoView.setVisibility(View.VISIBLE);
+                remoteVideoView.setVisibility(View.VISIBLE);
+                try {
+                    Log.d(TAG,"new session created, arerror");
+
+                    session = new Session(remoteVideoView.getContext());
+
+
+                } catch (UnavailableArcoreNotInstalledException e) {
+                    Log.d(TAG, "Please install ARCore, arerror");
+                    e.printStackTrace();
+                } catch (UnavailableApkTooOldException e) {
+                    Log.d(TAG, "Please update ARCore, arerror");
+                    e.printStackTrace();
+                } catch (UnavailableSdkTooOldException e) {
+                    Log.d(TAG, "Please update ARCore, arerror");
+                    e.printStackTrace();
+                } catch (UnavailableDeviceNotCompatibleException e) {
+                    Log.d(TAG, "This device does not support AR, arerror");
+                    e.printStackTrace();
+                }
 
                 videoTrack.addSink(remoteVideoView);
 
+
             } catch (Exception e) {
+                Log.d(TAG, "could not create new session: ");
                 e.printStackTrace();
             }
         });
@@ -618,26 +664,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onAnswerReceived(JSONObject data) {
         showToast("Received Answer");
         Log.d(TAG,"Received Answer");
+
         try {
             Log.d(TAG,"try Received Answer");
             localPeer.setRemoteDescription(new CustomSdpObserver("localSetRemote"), new SessionDescription(SessionDescription.Type.fromCanonicalForm(data.getString("type").toLowerCase()), data.getString("sdp")));
-            try {
-                Log.d(TAG,"new session created");
-                session = new Session(localVideoView.getContext());
-            } catch (UnavailableArcoreNotInstalledException e) {
-                Log.d(TAG, "Please install ARCore, arerror");
-                e.printStackTrace();
-            } catch (UnavailableApkTooOldException e) {
-                Log.d(TAG, "Please update ARCore, arerror");
-                e.printStackTrace();
-            } catch (UnavailableSdkTooOldException e) {
-                Log.d(TAG, "Please update ARCore, arerror");
-                e.printStackTrace();
-            } catch (UnavailableDeviceNotCompatibleException e) {
-                Log.d(TAG, "This device does not support AR, arerror");
-                e.printStackTrace();
-            }
-            //updateVideoViews(true);
+//            try {
+//                Log.d(TAG,"new session created, arerror");
+//                session = new Session(localVideoView.getContext());
+//            } catch (UnavailableArcoreNotInstalledException e) {
+//                Log.d(TAG, "Please install ARCore, arerror");
+//                e.printStackTrace();
+//            } catch (UnavailableApkTooOldException e) {
+//                Log.d(TAG, "Please update ARCore, arerror");
+//                e.printStackTrace();
+//            } catch (UnavailableSdkTooOldException e) {
+//                Log.d(TAG, "Please update ARCore, arerror");
+//                e.printStackTrace();
+//            } catch (UnavailableDeviceNotCompatibleException e) {
+//                Log.d(TAG, "This device does not support AR, arerror");
+//                e.printStackTrace();
+//            }
+
+            updateVideoViews(true);
 
 
         } catch (JSONException e) {
@@ -705,14 +753,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 logger();
                 if(changeButton.getText().equals("Switch")){
                     changeButton.setText("StopAR");
+                    //session.pause();
+                    //session = null;
+                    //localVideoView.onPause;
+                    //session.pause();
+                    startSteam = true;
+
+                    try {
+                        session.resume();
+
+                        surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+                    } catch (CameraNotAvailableException e) {
+                        e.printStackTrace();
+                    }
 
 
 
 
-                    Log.d(TAG, "button pushed");
+
+
+
+                    Log.d(TAG, "button pushed to Stop Ar");
 
                 }else{
-                    changeButton.setText("Start");
+
+                    session.pause();
+
+                    surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+                    Log.d(TAG, "button pushed to Stop Ar");
+//                    try {
+//                        session.resume();
+//                    } catch (CameraNotAvailableException e) {
+//                        e.printStackTrace();
+//                    }
+                    changeButton.setText("Switch");
                 }
                 break;
             }
@@ -877,7 +951,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // UpdateMode.BLOCKING (it is by default), this will throttle the rendering to the
             // camera framerate.
 
-
+            //Log.d(TAG,"render");
             Frame frame = session.update();
             Camera camera = frame.getCamera();
 
