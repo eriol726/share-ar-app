@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -96,8 +97,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     MediaConstraints sdpConstraints;
     VideoSource videoSource;
     VideoTrack localVideoTrack;
+    VideoTrack remoteVideoTrack;
     AudioSource audioSource;
     AudioTrack localAudioTrack;
+
+    ImageView imageView;
+
 
     SurfaceViewRenderer localVideoView;
     SurfaceViewRenderer remoteVideoView;
@@ -158,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        surfaceView = (GLSurfaceView) findViewById(R.id.surfaceview);
+
         displayRotationHelper = new DisplayRotationHelper(/*context=*/ this);
         //deviceName = getDeviceName().toLowerCase();
 
@@ -196,6 +201,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         hangup = findViewById(R.id.end_call);
         startButton = findViewById(R.id.start);
         changeButton = findViewById(R.id.change);
+
+        imageView = (ImageView) findViewById(R.id.imageView);
+        surfaceView = (GLSurfaceView) findViewById(R.id.surfaceview);
         localVideoView = findViewById(R.id.local_gl_surface_view);
         remoteVideoView = findViewById(R.id.remote_gl_surface_view);
         hangup.setOnClickListener(this);
@@ -208,6 +216,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         rootEglBase = EglBase.create();
         localVideoView.init(rootEglBase.getEglBaseContext(), null);
         remoteVideoView.init(rootEglBase.getEglBaseContext(), null);
+        imageView.setImageResource(R.drawable.duck);
         localVideoView.setZOrderMediaOverlay(true);
         remoteVideoView.setZOrderMediaOverlay(true);
     }
@@ -241,11 +250,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     // Create the session.
                     Log.d(TAG, "Create the session");
 
-
-                    session = new Session(/* context= */ this);
-
-
-
+                    session = new Session(/* context= */ remoteVideoView.getContext());
 
                 } catch (UnavailableArcoreNotInstalledException
                         | UnavailableUserDeclinedInstallationException e) {
@@ -421,7 +426,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // And finally, with our VideoRenderer ready, we
         // can add our renderer to the VideoTrack.
-        localVideoView.setVisibility(View.VISIBLE);
+        //localVideoView.setVisibility(View.VISIBLE);
         localVideoTrack.addSink(localVideoView);
 
 
@@ -543,13 +548,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void gotRemoteStream(MediaStream stream) {
         //we have remote video stream. add to the renderer.
-        final VideoTrack videoTrack = stream.videoTracks.get(0);
+        remoteVideoTrack = stream.videoTracks.get(0);
         runOnUiThread(() -> {
             try {
                 Log.d(TAG, "deviceName: " + deviceName);
 
+                // render the remote camera to the the xml viewer tag remote_gl_surface_view"
+                remoteVideoTrack.addSink(localVideoView);
                 //changeButton.setVisibility(View.INVISIBLE);
-                remoteVideoView.setVisibility(View.VISIBLE);
+                //remoteVideoView.setVisibility(View.VISIBLE);
                 try {
                     Log.d(TAG,"new session created, arerror");
 
@@ -570,7 +577,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     e.printStackTrace();
                 }
 
-                videoTrack.addSink(remoteVideoView);
+                try {
+                    session.resume();
+
+                    surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+                } catch (CameraNotAvailableException e) {
+                    e.printStackTrace();
+                }
+
+                surfaceView.onResume();
+                displayRotationHelper.onResume();
+
+
+
+
 
 
             } catch (Exception e) {
@@ -685,7 +705,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                e.printStackTrace();
 //            }
 
-            updateVideoViews(true);
+            //updateVideoViews(true);
 
 
         } catch (JSONException e) {
@@ -739,6 +759,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.start: {
                 logger();
                 //surfaceView.setVisibility(View.INVISIBLE);
+
+                surfaceView.onPause();
                 initVideos();
                 getIceServers();
                 SignallingClient.getInstance().init(this);
@@ -907,7 +929,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Prepare the rendering objects. This involves reading shaders, so may throw an IOException.
         try {
             // Create the texture and pass it to ARCore session to be filled during update().
-            backgroundRenderer.createOnGlThread(/*context=*/ this);
+            backgroundRenderer.createOnGlThread(/*context=*/ imageView.getContext());
             planeRenderer.createOnGlThread(/*context=*/ this, "models/trigrid.png");
             pointCloudRenderer.createOnGlThread(/*context=*/ this);
 
@@ -937,9 +959,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-        if (session == null) {
-            return;
-        }
+//        if (session == null) {
+//            return;
+//        }
         // Notify ARCore session that the view size changed so that the perspective matrix and
         // the video background can be properly adjusted.
         displayRotationHelper.updateSessionIfNeeded(session);
@@ -955,7 +977,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Frame frame = session.update();
             Camera camera = frame.getCamera();
 
-            localVideoView.getLayoutParams();
             // Handle one tap per frame.
             handleTap(frame, camera);
 

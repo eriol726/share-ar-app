@@ -20,5 +20,5 @@ uniform samplerExternalOES sTexture;
 
 
 void main() {
-    gl_FragColor = texture2D(sTexture, v_TexCoord);
-}
+      gl_FragColor = texture2D(sTexture, v_TexCoord);
+    }
