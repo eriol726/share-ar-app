@@ -107,6 +107,12 @@ public class PlaneRenderer {
 
   private final Map<Plane, Integer> planeIndexMap = new HashMap<>();
 
+  private int textureId = -1;
+
+  public int getTextureId() {
+    return textureId;
+  }
+
   public PlaneRenderer() {}
 
   /**
@@ -136,6 +142,8 @@ public class PlaneRenderer {
 
     GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
     GLES20.glGenTextures(textures.length, textures, 0);
+
+    textureId = textures[0];
     GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
 
     GLES20.glTexParameteri(

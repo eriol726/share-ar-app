@@ -5,6 +5,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.SurfaceTexture;
+import android.graphics.drawable.Drawable;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.opengl.GLES20;
@@ -44,6 +47,7 @@ import org.webrtc.ScreenCapturerAndroid;
 import org.webrtc.SessionDescription;
 import org.webrtc.SurfaceViewRenderer;
 import org.webrtc.VideoCapturer;
+import org.webrtc.VideoFrame;
 import org.webrtc.VideoRenderer;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
@@ -90,7 +94,7 @@ import common.helpers.TrackingStateHelper;
 // https://github.com/google-ar/arcore-android-sdk/blob/master/samples/hello_ar_java/app/src/main/java/com/google/ar/core/examples/java/helloar/HelloArActivity.java
 // https://github.com/vivek1794/webrtc-android-codelab/blob/master/Step-3/app/src/main/java/xyz/vivekc/webrtccodelab/MainActivity.java
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, SignallingClient.SignalingInterface, GLSurfaceView.Renderer {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, SignallingClient.SignalingInterface, GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvailableListener {
     PeerConnectionFactory peerConnectionFactory;
     MediaConstraints audioConstraints;
     MediaConstraints videoConstraints;
@@ -100,6 +104,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     VideoTrack remoteVideoTrack;
     AudioSource audioSource;
     AudioTrack localAudioTrack;
+
+    SurfaceTexture mSurfaceTexture;
 
     ImageView imageView;
 
@@ -219,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         imageView.setImageResource(R.drawable.duck);
         localVideoView.setZOrderMediaOverlay(true);
         remoteVideoView.setZOrderMediaOverlay(true);
+
     }
 
 
@@ -250,7 +257,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     // Create the session.
                     Log.d(TAG, "Create the session");
 
-                    session = new Session(/* context= */ remoteVideoView.getContext());
+                    session = new Session(/* context= */ this);
+
 
                 } catch (UnavailableArcoreNotInstalledException
                         | UnavailableUserDeclinedInstallationException e) {
@@ -560,7 +568,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 try {
                     Log.d(TAG,"new session created, arerror");
 
-                    session = new Session(remoteVideoView.getContext());
+                    session = new Session(this);
 
 
                 } catch (UnavailableArcoreNotInstalledException e) {
@@ -926,6 +934,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         GLES20.glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
+        int[] hTex = new int[1];
+        mSurfaceTexture = new SurfaceTexture( hTex[0] );
+        mSurfaceTexture.setOnFrameAvailableListener(this);
+
         // Prepare the rendering objects. This involves reading shaders, so may throw an IOException.
         try {
             // Create the texture and pass it to ARCore session to be filled during update().
@@ -967,6 +979,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         displayRotationHelper.updateSessionIfNeeded(session);
 
         try {
+            Log.d(TAG,"backgroundRenderer.getTextureId(): " + backgroundRenderer.getTextureId());
+            mSurfaceTexture.updateTexImage();
             session.setCameraTextureName(backgroundRenderer.getTextureId());
 
             // Obtain the current frame from ARSession. When the configuration is set to
@@ -981,7 +995,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             handleTap(frame, camera);
 
             // If frame is ready, render camera preview image to the GL surface.
-            backgroundRenderer.draw(frame);
+            //VideoFrame frame = new frame();
+
+            Drawable d = localVideoView.getBackground();
+            Bitmap b = localVideoView.getDrawingCache();
+
+
+            backgroundRenderer.draw(frame,b);
 
             // Keep the screen unlocked while tracking, but allow it to lock when tracking stops.
             trackingStateHelper.updateKeepScreenOnFlag(camera.getTrackingState());
@@ -1058,6 +1078,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         return false;
+    }
+
+    @Override
+    public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+
     }
 
     // Anchors created from taps used for object placing with a given color.

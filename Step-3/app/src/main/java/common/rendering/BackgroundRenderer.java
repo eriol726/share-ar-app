@@ -16,6 +16,7 @@
 package common.rendering;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -118,7 +119,7 @@ public class BackgroundRenderer {
    *
    * @param frame The current {@code Frame} as returned by {@link Session#update()}.
    */
-  public void draw(@NonNull Frame frame) {
+  public void draw(@NonNull Frame frame, Bitmap b) {
     // If display rotation changed (also includes view size change), we need to re-query the uv
     // coordinates for the screen rect, as they may have changed as well.
     if (frame.hasDisplayGeometryChanged()) {
