@@ -21,6 +21,8 @@ import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.support.annotation.NonNull;
+import android.util.Log;
+
 import com.google.ar.core.Coordinates2d;
 import com.google.ar.core.Frame;
 import java.io.IOException;
@@ -65,7 +67,7 @@ public class BackgroundRenderer {
    */
   public void createOnGlThread(Context context) throws IOException {
     // Generate the background texture.
-    int[] textures = new int[1];
+    int[] textures = new int[2];
     GLES20.glGenTextures(1, textures, 0);
     textureId = textures[0];
     int textureTarget = GLES11Ext.GL_TEXTURE_EXTERNAL_OES;
@@ -204,6 +206,8 @@ public class BackgroundRenderer {
 
     GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
     GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId);
+
+    Log.d(TAG, "textureId: " + textureId);
 
     GLES20.glUseProgram(quadProgram);
 

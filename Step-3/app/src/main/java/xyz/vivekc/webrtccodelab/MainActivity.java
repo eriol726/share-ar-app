@@ -6,12 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.SurfaceTexture;
 import android.graphics.drawable.Drawable;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.GLUtils;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -49,6 +51,7 @@ import org.webrtc.SurfaceViewRenderer;
 import org.webrtc.VideoCapturer;
 import org.webrtc.VideoFrame;
 import org.webrtc.VideoRenderer;
+import org.webrtc.VideoSink;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
 
@@ -93,6 +96,7 @@ import common.helpers.TapHelper;
 import common.helpers.TrackingStateHelper;
 // https://github.com/google-ar/arcore-android-sdk/blob/master/samples/hello_ar_java/app/src/main/java/com/google/ar/core/examples/java/helloar/HelloArActivity.java
 // https://github.com/vivek1794/webrtc-android-codelab/blob/master/Step-3/app/src/main/java/xyz/vivekc/webrtccodelab/MainActivity.java
+// https://stackoverflow.com/questions/35764190/glreadpixels-does-not-work-in-webrtc-android-surfaceviewrenderer
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SignallingClient.SignalingInterface, GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvailableListener {
     PeerConnectionFactory peerConnectionFactory;
@@ -108,7 +112,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     SurfaceTexture mSurfaceTexture;
 
     ImageView imageView;
-
 
     SurfaceViewRenderer localVideoView;
     SurfaceViewRenderer remoteVideoView;
@@ -431,6 +434,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
 
+        VideoTrack v;
+        SurfaceViewRenderer s;
 
         // And finally, with our VideoRenderer ready, we
         // can add our renderer to the VideoTrack.
@@ -934,12 +939,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         GLES20.glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
+
+
         int[] hTex = new int[1];
         mSurfaceTexture = new SurfaceTexture( hTex[0] );
         mSurfaceTexture.setOnFrameAvailableListener(this);
 
         // Prepare the rendering objects. This involves reading shaders, so may throw an IOException.
         try {
+
+            Bitmap b =imageView.getDrawingCache();
+            Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.duck);
+
+            final int[] textureHandle = new int[1];
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
+
+            // Set filtering
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
+            // Load the bitmap into the bound texture.
+            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp, 0);
+
+            // Recycle the bitmap, since its data has been loaded into OpenGL.
+            //b.recycle();
             // Create the texture and pass it to ARCore session to be filled during update().
             backgroundRenderer.createOnGlThread(/*context=*/ imageView.getContext());
             planeRenderer.createOnGlThread(/*context=*/ this, "models/trigrid.png");
@@ -991,6 +1014,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Frame frame = session.update();
             Camera camera = frame.getCamera();
 
+
             // Handle one tap per frame.
             handleTap(frame, camera);
 
@@ -998,7 +1022,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //VideoFrame frame = new frame();
 
             Drawable d = localVideoView.getBackground();
-            Bitmap b = localVideoView.getDrawingCache();
+            Bitmap b = remoteVideoView.getDrawingCache();
+
+
 
 
             backgroundRenderer.draw(frame,b);
@@ -1141,3 +1167,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 }
+
+

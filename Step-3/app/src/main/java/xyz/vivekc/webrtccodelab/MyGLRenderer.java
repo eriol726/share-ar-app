@@ -114,7 +114,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer{
             handleTap(frame, camera);
 
             // If frame is ready, render camera preview image to the GL surface.
-            backgroundRenderer.draw(frame);
+            //backgroundRenderer.draw(frame);
 
             // Keep the screen unlocked while tracking, but allow it to lock when tracking stops.
            // trackingStateHelper.updateKeepScreenOnFlag(camera.getTrackingState());
