@@ -50,11 +50,17 @@ public class BackgroundRenderer {
   private FloatBuffer quadCoords;
   private FloatBuffer quadTexCoords;
 
+  private int texCoordsBaseAddress;
+
   private int quadProgram;
 
   private int quadPositionParam;
   private int quadTexCoordParam;
   private int textureId = -1;
+
+  private int texCoordAttribute;
+  // Shader location: texture sampler.
+  private int textureUniform;
 
   public int getTextureId() {
     return textureId;
@@ -95,6 +101,10 @@ public class BackgroundRenderer {
     bbTexCoordsTransformed.order(ByteOrder.nativeOrder());
     quadTexCoords = bbTexCoordsTransformed.asFloatBuffer();
 
+    // Load vertex buffer
+    int verticesBaseAddress = 0;
+    texCoordsBaseAddress = verticesBaseAddress + 4 * quadCoords.limit();
+
 
 
     int vertexShader =
@@ -114,6 +124,8 @@ public class BackgroundRenderer {
     Bitmap textureBitmap =
             BitmapFactory.decodeStream(context.getAssets().open(TextureName));
 
+    GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+    GLES20.glGenTextures(textures.length, textures, 0);
     GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
 
     GLES20.glTexParameteri(
@@ -123,6 +135,9 @@ public class BackgroundRenderer {
     GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
     GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 
+    textureBitmap.recycle();
+
+    textureUniform = GLES20.glGetUniformLocation(quadProgram, "u_Texture");
 
     quadPositionParam = GLES20.glGetAttribLocation(quadProgram, "a_Position");
     quadTexCoordParam = GLES20.glGetAttribLocation(quadProgram, "a_TexCoord");
@@ -229,11 +244,11 @@ public class BackgroundRenderer {
     GLES20.glUseProgram(quadProgram);
 
       // Attach the object texture.
-      GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-      GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
+    GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
+    GLES20.glUniform1i(textureUniform, 0);
 
 
-      GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
     // Set the vertex positions.
     GLES20.glVertexAttribPointer(
@@ -252,6 +267,8 @@ public class BackgroundRenderer {
     // Disable vertex arrays
     GLES20.glDisableVertexAttribArray(quadPositionParam);
     GLES20.glDisableVertexAttribArray(quadTexCoordParam);
+
+    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 
     // Restore the depth state for further drawing.
     GLES20.glDepthMask(true);
