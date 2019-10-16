@@ -64,6 +64,7 @@ import common.rendering.BackgroundRenderer;
 import common.rendering.ObjectRenderer;
 import common.rendering.PlaneRenderer;
 import common.rendering.PointCloudRenderer;
+import common.rendering.RemoteRenderer;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -98,7 +99,7 @@ import common.helpers.TrackingStateHelper;
 // https://github.com/vivek1794/webrtc-android-codelab/blob/master/Step-3/app/src/main/java/xyz/vivekc/webrtccodelab/MainActivity.java
 // https://stackoverflow.com/questions/35764190/glreadpixels-does-not-work-in-webrtc-android-surfaceviewrenderer
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, SignallingClient.SignalingInterface, GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvailableListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, SignallingClient.SignalingInterface, GLSurfaceView.Renderer {
     PeerConnectionFactory peerConnectionFactory;
     MediaConstraints audioConstraints;
     MediaConstraints videoConstraints;
@@ -115,6 +116,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     SurfaceViewRenderer localVideoView;
     SurfaceViewRenderer remoteVideoView;
+
+    VideoRenderer.I420Frame frame2;
+
     private GLSurfaceView surfaceView;
 
     Button hangup;
@@ -144,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private final TrackingStateHelper trackingStateHelper = new TrackingStateHelper(this);
     private TapHelper tapHelper;
 
+    private final RemoteRenderer remoteRenderer = new RemoteRenderer();
     private final BackgroundRenderer backgroundRenderer = new BackgroundRenderer();
     private final ObjectRenderer virtualObject = new ObjectRenderer();
     private final ObjectRenderer virtualObjectShadow = new ObjectRenderer();
@@ -182,7 +187,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //startScreenCapture();
         Log.d(TAG, "tjaa");
-
 
 
 
@@ -406,8 +410,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Now create a VideoCapturer instance.
         VideoCapturer videoCapturerAndroid;
         //VideoCapturer v = createScreenCapturer();
-        videoCapturerAndroid = createCameraCapturer(new Camera1Enumerator(false));
-        createCameraCapturer(new Camera1Enumerator(false));
+        videoCapturerAndroid = createCameraCapturer(new Camera1Enumerator(true));
+        createCameraCapturer(new Camera1Enumerator(true));
         //videoCapturerAndroid = v;
 
         Log.d(TAG, "videoCapturerAndroid: " + videoCapturerAndroid.isScreencast());
@@ -415,6 +419,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Create MediaConstraints - Will be useful for specifying video and audio constraints.
         audioConstraints = new MediaConstraints();
         videoConstraints = new MediaConstraints();
+
 
         //Create a VideoSource instance
         if (videoCapturerAndroid != null) {
@@ -568,6 +573,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 // render the remote camera to the the xml viewer tag remote_gl_surface_view"
                 remoteVideoTrack.addSink(localVideoView);
+
                 //changeButton.setVisibility(View.INVISIBLE);
                 //remoteVideoView.setVisibility(View.VISIBLE);
                 try {
@@ -942,8 +948,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         int[] hTex = new int[1];
-        mSurfaceTexture = new SurfaceTexture( hTex[0] );
-        mSurfaceTexture.setOnFrameAvailableListener(this);
+        //mSurfaceTexture = new SurfaceTexture( hTex[0] );
+        //mSurfaceTexture.setOnFrameAvailableListener(this);
 
         // Prepare the rendering objects. This involves reading shaders, so may throw an IOException.
         try {
@@ -951,21 +957,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Bitmap b =imageView.getDrawingCache();
             Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.duck);
 
-            final int[] textureHandle = new int[1];
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
+//            final int[] textureHandle = new int[1];
+//            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
+//
+//            // Set filtering
+//            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+//            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+//
+//            // Load the bitmap into the bound texture.
+//            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp, 0);
 
-            // Set filtering
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
 
-            // Load the bitmap into the bound texture.
-            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp, 0);
 
             // Recycle the bitmap, since its data has been loaded into OpenGL.
             //b.recycle();
             // Create the texture and pass it to ARCore session to be filled during update().
-            backgroundRenderer.createOnGlThread(/*context=*/ imageView.getContext());
-            planeRenderer.createOnGlThread(/*context=*/ this, "models/trigrid.png");
+            backgroundRenderer.createOnGlThread(/*context=*/ this, "models/duck.jpg");
+            //planeRenderer.createOnGlThread(/*context=*/ this, "models/trigrid.png");
+            remoteRenderer.createOnGlThread(this, "models/duck.jpg");
             pointCloudRenderer.createOnGlThread(/*context=*/ this);
 
             virtualObject.createOnGlThread(/*context=*/ this, "models/arrow.obj", "models/arrow_diffuse_4.png");
@@ -1003,7 +1012,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         try {
             Log.d(TAG,"backgroundRenderer.getTextureId(): " + backgroundRenderer.getTextureId());
-            mSurfaceTexture.updateTexImage();
+            //mSurfaceTexture.updateTexImage();
+
             session.setCameraTextureName(backgroundRenderer.getTextureId());
 
             // Obtain the current frame from ARSession. When the configuration is set to
@@ -1024,10 +1034,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Drawable d = localVideoView.getBackground();
             Bitmap b = remoteVideoView.getDrawingCache();
 
-
-
-
             backgroundRenderer.draw(frame,b);
+
 
             // Keep the screen unlocked while tracking, but allow it to lock when tracking stops.
             trackingStateHelper.updateKeepScreenOnFlag(camera.getTrackingState());
@@ -1069,9 +1077,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 messageSnackbarHelper.showMessage(this, SEARCHING_PLANE_MESSAGE);
             }
 
-            // Visualize planes.
-            planeRenderer.drawPlanes(
+            remoteRenderer.drawPlanes(
                     session.getAllTrackables(Plane.class), camera.getDisplayOrientedPose(), projmtx);
+
+            // Visualize planes.
+//            planeRenderer.drawPlanes(
+//                    session.getAllTrackables(Plane.class), camera.getDisplayOrientedPose(), projmtx);
 
             // Visualize anchors created by touch.
             float scaleFactor = 0.15f;
@@ -1106,10 +1117,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return false;
     }
 
-    @Override
-    public void onFrameAvailable(SurfaceTexture surfaceTexture) {
 
-    }
 
     // Anchors created from taps used for object placing with a given color.
     private static class ColoredAnchor {

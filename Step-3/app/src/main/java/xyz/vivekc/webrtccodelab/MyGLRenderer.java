@@ -66,7 +66,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer{
         // Prepare the rendering objects. This involves reading shaders, so may throw an IOException.
         try {
             // Create the texture and pass it to ARCore session to be filled during update().
-            backgroundRenderer.createOnGlThread(/*context=*/ this.context);
+            backgroundRenderer.createOnGlThread(/*context=*/ this.context, "models/duck.jpg");
             planeRenderer.createOnGlThread(/*context=*/ this.context, "models/trigrid.png");
             pointCloudRenderer.createOnGlThread(/*context=*/ this.context);
 
