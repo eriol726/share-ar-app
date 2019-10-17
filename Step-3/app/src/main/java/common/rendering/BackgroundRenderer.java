@@ -77,7 +77,7 @@ public class BackgroundRenderer {
     // Generate the background texture.
     int[] textures = new int[2];
     GLES20.glGenTextures(1, textures, 0);
-    textureId = textures[0];
+    textureId = textures[1];
 //    int textureTarget = GLES11Ext.GL_TEXTURE_EXTERNAL_OES;
 //    GLES20.glBindTexture(textureTarget, textureId);
 //    GLES20.glTexParameteri(textureTarget, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
@@ -126,7 +126,7 @@ public class BackgroundRenderer {
 
     GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
     GLES20.glGenTextures(textures.length, textures, 0);
-    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
+    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
 
     GLES20.glTexParameteri(
             GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
@@ -158,11 +158,11 @@ public class BackgroundRenderer {
     // If display rotation changed (also includes view size change), we need to re-query the uv
     // coordinates for the screen rect, as they may have changed as well.
     if (frame.hasDisplayGeometryChanged()) {
-//      frame.transformCoordinates2d(
-//          Coordinates2d.OPENGL_NORMALIZED_DEVICE_COORDINATES,
-//          quadCoords,
-//          Coordinates2d.TEXTURE_NORMALIZED,
-//          quadTexCoords);
+      frame.transformCoordinates2d(
+          Coordinates2d.OPENGL_NORMALIZED_DEVICE_COORDINATES,
+          quadCoords,
+          Coordinates2d.TEXTURE_NORMALIZED,
+          quadTexCoords);
     }
 
     if (frame.getTimestamp() == 0) {

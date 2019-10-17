@@ -75,7 +75,7 @@ class SignallingClient {
 
             //192.168.10.176
             //192.168.2.194
-            socket = IO.socket("http://192.168.10.176:1794");
+            socket = IO.socket("http://192.168.2.194:1794");
             socket.connect();
             Log.d("SignallingClient", "init() called");
 
