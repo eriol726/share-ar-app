@@ -217,6 +217,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         imageView = (ImageView) findViewById(R.id.imageView);
         surfaceView = (GLSurfaceView) findViewById(R.id.surfaceview);
+        surfaceView.setZOrderMediaOverlay(false);
         localVideoView = findViewById(R.id.local_gl_surface_view);
         remoteVideoView = findViewById(R.id.remote_gl_surface_view);
         hangup.setOnClickListener(this);
@@ -973,8 +974,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //b.recycle();
             // Create the texture and pass it to ARCore session to be filled during update().
             backgroundRenderer.createOnGlThread(/*context=*/ this, "models/duck.jpg");
-            //planeRenderer.createOnGlThread(/*context=*/ this, "models/trigrid.png");
-            remoteRenderer.createOnGlThread(this, "models/duck.jpg");
+            planeRenderer.createOnGlThread(/*context=*/ this, "models/trigrid.png");
+            //remoteRenderer.createOnGlThread(this, "models/duck.jpg");
             pointCloudRenderer.createOnGlThread(/*context=*/ this);
 
             virtualObject.createOnGlThread(/*context=*/ this, "models/arrow.obj", "models/arrow_diffuse_4.png");
@@ -1077,7 +1078,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 messageSnackbarHelper.showMessage(this, SEARCHING_PLANE_MESSAGE);
             }
 
-            remoteRenderer.drawPlanes(
+            planeRenderer.drawPlanes(
                     session.getAllTrackables(Plane.class), camera.getDisplayOrientedPose(), projmtx);
 
             // Visualize planes.
