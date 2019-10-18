@@ -1,4 +1,4 @@
-# webrtc-android-codelab
+# share-ar-app
 This app is an attempt to use the camera stream from a remote device into a AR scene on a responding device. The application code is a merge betwwen  https://codelabs.developers.google.com/codelabs/webrtc-web/ (for AR features) and https://github.com/vivek1794/webrtc-android-codelab (for sharing cameras)
 
 ## Instructions
