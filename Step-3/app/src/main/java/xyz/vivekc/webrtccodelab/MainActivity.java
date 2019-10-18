@@ -112,7 +112,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     SurfaceTexture mSurfaceTexture;
 
-    ImageView imageView;
 
     SurfaceViewRenderer localVideoView;
     SurfaceViewRenderer remoteVideoView;
@@ -186,9 +185,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initViews();
 
         //startScreenCapture();
-        Log.d(TAG, "tjaa");
-
-
 
         // Set up tap listener.
         tapHelper = new TapHelper(/*context=*/ this);
@@ -215,7 +211,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startButton = findViewById(R.id.start);
         changeButton = findViewById(R.id.change);
 
-        imageView = (ImageView) findViewById(R.id.imageView);
         surfaceView = (GLSurfaceView) findViewById(R.id.surfaceview);
         surfaceView.setZOrderMediaOverlay(false);
         localVideoView = findViewById(R.id.local_gl_surface_view);
@@ -230,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         rootEglBase = EglBase.create();
         localVideoView.init(rootEglBase.getEglBaseContext(), null);
         remoteVideoView.init(rootEglBase.getEglBaseContext(), null);
-        imageView.setImageResource(R.drawable.duck);
+
         localVideoView.setZOrderMediaOverlay(true);
         remoteVideoView.setZOrderMediaOverlay(true);
 
@@ -946,36 +941,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         GLES20.glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
-
-
-        int[] hTex = new int[1];
-        //mSurfaceTexture = new SurfaceTexture( hTex[0] );
-        //mSurfaceTexture.setOnFrameAvailableListener(this);
-
         // Prepare the rendering objects. This involves reading shaders, so may throw an IOException.
         try {
-
-            Bitmap b =imageView.getDrawingCache();
-            Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.duck);
-
-//            final int[] textureHandle = new int[1];
-//            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
-//
-//            // Set filtering
-//            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-//            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-//
-//            // Load the bitmap into the bound texture.
-//            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp, 0);
-
-
 
             // Recycle the bitmap, since its data has been loaded into OpenGL.
             //b.recycle();
             // Create the texture and pass it to ARCore session to be filled during update().
-            backgroundRenderer.createOnGlThread(/*context=*/ this, "models/duck.jpg");
-            planeRenderer.createOnGlThread(/*context=*/ this, "models/trigrid.png");
+            backgroundRenderer.createOnGlThread(/*context=*/ this);
             //remoteRenderer.createOnGlThread(this, "models/duck.jpg");
+            planeRenderer.createOnGlThread(/*context=*/ this, "models/trigrid.png");
+
             pointCloudRenderer.createOnGlThread(/*context=*/ this);
 
             virtualObject.createOnGlThread(/*context=*/ this, "models/arrow.obj", "models/arrow_diffuse_4.png");
@@ -1035,7 +1010,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Drawable d = localVideoView.getBackground();
             Bitmap b = remoteVideoView.getDrawingCache();
 
-            backgroundRenderer.draw(frame,b);
+            backgroundRenderer.draw(frame);
 
 
             // Keep the screen unlocked while tracking, but allow it to lock when tracking stops.

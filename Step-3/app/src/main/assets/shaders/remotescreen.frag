@@ -12,12 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#extension GL_OES_EGL_image_external : require
 
-precision highp float;
+precision mediump float;
+varying vec2 v_TexCoord;
+//uniform samplerExternalOES sTexture;
 uniform sampler2D u_Texture;
-varying vec3 v_TexCoordAlpha;
 
 void main() {
-  vec4 control = texture2D(u_Texture, v_TexCoordAlpha.xz);
-  gl_FragColor = control;
+  vec4 color = texture2D(u_Texture, v_TexCoord);
+  gl_FragColor = vec4(color.rgb, 1);
+
 }
